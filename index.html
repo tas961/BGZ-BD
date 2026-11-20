@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buses of Gabtoli Zone - Management Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --primary-gradient: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
+            --admin-gradient: linear-gradient(135deg, #be185d 0%, #4c1d95 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --btn-shadow: 0 4px 12px rgba(147, 51, 234, 0.25);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text); padding: 12px 8px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        .app-container {
+            width: 100%; max-width: 440px; min-height: 92vh;
+            background: var(--card-bg); border-radius: 28px; padding: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            position: relative; overflow-x: hidden; overflow-y: auto;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        /* Headers */
+        .app-top-header { background: var(--primary-gradient); padding: 20px; border-radius: 22px; color: white; margin: -20px -20px 18px -20px; position: relative; }
+        .admin-top-header { background: var(--admin-gradient); padding: 20px; border-radius: 22px; color: white; margin: -20px -20px 18px -20px; position: relative; }
+
+        .header-profile { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+        .profile-name { font-size: 17px; font-weight: 800; display: block; }
+        .wallet-box {
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            backdrop-filter: blur(6px);
+        }
+
+        .header-icons { display: flex; gap: 8px; flex-shrink: 0; }
+        .icon-btn { background: rgba(255,255,255,0.22); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px; transition: 0.2s; }
+        .icon-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.05); }
+
+        .live-clock-bar { background: rgba(0, 0, 0, 0.18); padding: 7px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; backdrop-filter: blur(4px); }
+
+        .search-bar-box { background: white; padding: 11px 15px; border-radius: 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .search-bar-box input { border: none; outline: none; width: 100%; font-size: 14px; font-weight: 600; color: var(--text); }
+
+        .main-action-btn { background: white; color: #db2777; width: 100%; border: none; padding: 12px; border-radius: 14px; font-weight: 800; font-size: 14px; margin-top: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.2s; }
+        .main-action-btn:active { transform: scale(0.98); }
+
+        /* Quick Service Grid */
+        .service-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+        .service-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
+        .service-icon { width: 52px; height: 52px; background: #fdf2f8; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 21px; margin-bottom: 6px; box-shadow: 0 4px 10px rgba(219, 39, 119, 0.08); border: 1px solid #fce7f3; transition: 0.2s; }
+        .service-item:hover .service-icon { transform: scale(1.06); background: #fce7f3; }
+        .service-item span { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+
+        .notice-banner { background: #f0fdf4; border: 1px solid #dcfce7; padding: 14px 16px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; box-shadow: var(--card-shadow); cursor: pointer; }
+        .notice-content h4 { font-size: 14px; font-weight: 700; color: #166534; }
+        .notice-content p { font-size: 12px; color: #15803d; margin-top: 2px; }
+
+        .screen { display: none; }
+        .active-screen { display: block; animation: fadeIn 0.25s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .auth-title { text-align: center; margin: 10px 0 20px 0; font-size: 22px; color: #db2777; font-weight: 800; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-size: 14px; font-weight: 500; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #db2777; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(219, 39, 119, 0.12); }
+
+        .btn { width: 100%; padding: 13px; background: var(--primary-gradient); color: white; border: none; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; box-shadow: var(--btn-shadow); }
+        .btn:hover { transform: translateY(-1px); opacity: 0.95; }
+        .btn-success { background: var(--success-gradient); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
+        .btn-danger { background: var(--danger-gradient); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+
+        .event-card { background: #ffffff; border-radius: 16px; padding: 15px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: var(--card-shadow); display: flex; flex-direction: column; gap: 6px; }
+        .event-badge { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; width: max-content; text-transform: uppercase; }
+        .badge-tour { background: #e0f2fe; color: #0369a1; }
+        .badge-tshirt { background: #fce7f3; color: #be185d; }
+        .badge-meetup { background: #fef3c7; color: #b45309; }
+
+        /* 2+2 Seat Layout Design */
+        .bus-layout-wrapper { background: #f8fafc; border: 2px solid var(--border); border-radius: 16px; padding: 14px; margin: 12px 0; }
+        .driver-cabin { text-align: right; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1; }
+        .seat-row { display: grid; grid-template-columns: 1fr 1fr 28px 1fr 1fr; gap: 7px; margin-bottom: 8px; align-items: center; }
+        .seat { padding: 9px 0; background: #ffffff; color: #475569; text-align: center; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 12px; border: 1px solid #cbd5e1; transition: 0.2s; }
+        .seat.selected { background: var(--primary-gradient); color: white; border-color: transparent; }
+        .seat.booked { background: #fef2f2; color: #ef4444; border-color: #fee2e2; cursor: not-allowed; }
+        .seat-aisle { text-align: center; font-size: 10px; color: #94a3b8; font-weight: 600; }
+
+        /* Voting Machine & Option Cards */
+        .evm-machine {
+            background: #0f172a; color: #f8fafc; border-radius: 20px; padding: 16px;
+            border: 3px solid #334155; box-shadow: 0 15px 30px rgba(15, 23, 42, 0.25);
+        }
+        .vote-candidate-card {
+            background: #1e293b; border: 2px solid #334155; border-radius: 16px; padding: 12px;
+            margin-bottom: 12px; transition: all 0.25s ease;
+        }
+        .vote-candidate-card.voted-anim {
+            border-color: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.45); transform: scale(1.02);
+        }
+        .vote-img-preview {
+            width: 100%; height: 150px; object-fit: cover; border-radius: 12px;
+            margin-bottom: 10px; background: #0f172a;
+        }
+        .evm-lamp {
+            width: 12px; height: 12px; border-radius: 50%; background: #475569;
+            display: inline-block; transition: 0.3s;
+        }
+        .evm-lamp.active {
+            background: #ef4444; box-shadow: 0 0 12px #ef4444;
+        }
+        .progress-track {
+            width: 100%; height: 10px; background: #334155; border-radius: 999px;
+            overflow: hidden; margin-top: 6px;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #10b981, #34d399);
+            width: 0%; transition: width 0.6s ease;
+        }
+
+        /* ==========================================
+           BUS ANIMATION MANDATORY LOGIN SCREEN
+        ========================================== */
+        #user-bus-login-screen {
+            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 55%, #090d16 100%);
+            color: #f8fafc;
+            margin: -20px;
+            padding: 20px;
+            min-height: 92vh;
+            border-radius: 26px;
+            position: relative;
+            overflow: hidden;
+        }
+        .bus-stage {
+            position: relative;
+            width: 100%;
+            height: 155px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 72%, #1e293b 72%, #020617 100%);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.14);
+            margin-top: 12px;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.55);
+        }
+        .road-stripes {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 200%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #fbbf24 0px,
+                #fbbf24 28px,
+                transparent 28px,
+                transparent 56px
+            );
+            animation: moveRoad 1s linear infinite;
+        }
+        @keyframes moveRoad {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        .speed-lines {
+            position: absolute;
+            top: 26px;
+            left: 0;
+            width: 200%;
+            height: 2px;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(255,255,255,0.25) 0px,
+                rgba(255,255,255,0.25) 18px,
+                transparent 18px,
+                transparent 65px
+            );
+            animation: moveRoad 0.7s linear infinite;
+        }
+        .animated-bus {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 176px;
+            height: 70px;
+            animation: busBounce 0.5s ease-in-out infinite alternate;
+            z-index: 4;
+        }
+        @keyframes busBounce {
+            from { transform: translate(-50%, 0px); }
+            to { transform: translate(-50%, -3.5px); }
+        }
+        .bus-body {
+            width: 100%;
+            height: 54px;
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            border-radius: 14px 18px 6px 6px;
+            position: relative;
+            box-shadow: 0 8px 22px rgba(139, 92, 246, 0.5);
+            border: 1px solid rgba(255,255,255,0.28);
+        }
+        .bus-stripe {
+            position: absolute;
+            top: 26px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #fbbf24;
+        }
+        .bus-windows {
+            display: flex;
+            gap: 6px;
+            padding: 7px 10px 0 10px;
+        }
+        .bus-win {
+            flex: 1;
+            height: 14px;
+            background: rgba(224, 242, 254, 0.88);
+            border-radius: 3px;
+        }
+        .bus-win.windshield {
+            flex: 1.35;
+            background: #bae6fd;
+            border-radius: 3px 10px 3px 3px;
+        }
+        .bus-headlight {
+            position: absolute;
+            right: -4px;
+            bottom: 10px;
+            width: 8px;
+            height: 10px;
+            background: #fef08a;
+            border-radius: 3px;
+            box-shadow: 14px 0 24px 7px rgba(254, 240, 138, 0.8);
+        }
+        .bus-wheel {
+            position: absolute;
+            bottom: -4px;
+            width: 22px;
+            height: 22px;
+            background: #0f172a;
+            border: 3px solid #cbd5e1;
+            border-radius: 50%;
+            animation: spinWheel 0.45s linear infinite;
+        }
+        .bus-wheel.front { right: 20px; }
+        .bus-wheel.rear { left: 22px; }
+        .bus-wheel::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: #fbbf24;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        @keyframes spinWheel {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .bus-login-card {
+            background: rgba(30, 41, 59, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+        }
+        .bus-login-card input {
+            background: rgba(15, 23, 42, 0.88) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+        }
+        .bus-login-card input:focus {
+            border-color: #ec4899 !important;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25) !important;
+        }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.55); z-index: 99999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(8px); }
+        .modal-box { background: #ffffff; width: 100%; max-width: 400px; border-radius: 20px; padding: 22px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border-top: 6px solid #db2777; max-height: 90vh; overflow-y: auto; }
+
+        .slip-wrapper { background: #fff; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 16px; color: #000; text-align: left; }
+        .slip-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 10px; }
+        .slip-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; }
+
+        .back-link { cursor: pointer; color: #db2777; font-weight: 700; font-size: 14px; display: inline-block; margin-bottom: 12px; }
+
+        .payment-box-option { display: flex; align-items: center; gap: 12px; background: #f8fafc; border: 2px solid var(--border); padding: 12px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; }
+        .payment-box-option.selected { border-color: #db2777; background: #fdf2f8; }
+        .payment-box-option.wallet-option { border-color: #10b981; background: #f0fdf4; }
+        .payment-box-option.wallet-option.selected { border-color: #047857; background: #dcfce7; }
+
+        .tamim-studio-watermark { text-align: center; font-size: 11px; font-weight: 600; color: #0f172a; opacity: 0.25; margin-top: 16px; padding-bottom: 4px; user-select: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Admin List Modal -->
+    <div id="admin-list-popup-overlay" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="color:#db2777; text-align:center; margin-bottom:14px; font-size:18px;">👥 আমাদের এডমিন প্যানেল লিস্ট</h3>
+            <div class="event-card"><b>Tamim Joy</b><br><span style="color:#64748b;">01731-222108</span></div>
+            <button class="btn btn-danger" style="margin-top:14px;" onclick="closeModal('admin-list-popup-overlay')">বন্ধ করুন</button>
+        </div>
+    </div>
+
+    <!-- Payment Info Modal -->
+    <div id="payment-info-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="color:#db2777; text-align:center; margin-bottom:14px; font-size:18px;">💸 পেমেন্ট মাধ্যমসমূহ</h3>
+            <div id="payment-info-content" style="font-size:14px; line-height:1.6;"></div>
+            <button class="btn" style="margin-top:14px;" onclick="closeModal('payment-info-modal')">বন্ধ করুন</button>
+        </div>
+    </div>
+
+    <!-- Slip Modal -->
+    <div id="slip-modal-overlay" class="modal-overlay">
+        <div class="modal-box" id="slip-modal-box" style="border-top-color: #f59e0b;">
+            <h3 id="slip-modal-heading" style="color:#d97706; text-align:center; margin-bottom:8px;">⏳ পেমেন্ট পেন্ডিং অবস্থায় আছে!</h3>
+            <p id="slip-modal-subtext" style="font-size:12px; text-align:center; color:#64748b; margin-bottom:12px;">অ্যাডমিন যাচাই করার পর এটি এপ্রুভ করা হবে।</p>
+            <div id="invoice-slip-capture" class="slip-wrapper">
+                <div class="slip-header">
+                    <h2 style="font-size:16px; font-weight:800;">BUSES OF GABTOLI ZONE</h2>
+                    <p style="font-size:10px; color:#64748b;">Official Slip</p>
+                </div>
+                <div class="slip-row"><span>স্ট্যাটাস:</span> <b id="slip-status-badge" style="color:#d97706;">PENDING</b></div>
+                <div class="slip-row"><span>বিবরণ:</span> <b id="slip-event-title">-</b></div>
+                <div class="slip-row"><span>ক্যাটাগরি:</span> <b id="slip-event-type">-</b></div>
+                <div class="slip-row"><span>নাম:</span> <b id="slip-user-name">-</b></div>
+                <div class="slip-row"><span>মোবাইল:</span> <b id="slip-user-phone">-</b></div>
+                <div id="slip-extra-row" class="slip-row" style="display:none;"><span>অতিরিক্ত তথ্য:</span> <b id="slip-extra-val">-</b></div>
+                <hr style="border:0; border-top:1px dashed #cbd5e1; margin:8px 0;">
+                <div class="slip-row"><span>অ্যামাউন্ট:</span> <b id="slip-total-fee">- ৳</b></div>
+                <div class="slip-row"><span>পেমেন্ট মাধ্যম:</span> <b id="slip-payment-method">-</b></div>
+                <div class="slip-row"><span>ট্র্যাকিং ডিজিট:</span> <b id="slip-digits">-</b></div>
+            </div>
+            <button class="btn btn-success" onclick="downloadInvoiceSlip()">📥 DOWNLOAD SLIP (সেভ করুন)</button>
+            <button class="btn" style="background:#e2e8f0; color:#0f172a; margin-top:8px;" onclick="closeModal('slip-modal-overlay'); showScreen('user-panel');">ফিরে যান</button>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+        <div>
+            <!-- ==========================================
+                 1. MANDATORY BUS ANIMATION USER LOGIN
+            ========================================== -->
+            <div id="user-bus-login-screen" class="screen active-screen">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; color:#fbbf24; font-weight:800;">🚌 BUSES OF GABTOLI ZONE</span>
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:600;">লগইন আবশ্যক</span>
+                </div>
+
+                <div class="bus-stage">
+                    <div class="speed-lines"></div>
+                    <div class="animated-bus">
+                        <div class="bus-body">
+                            <div class="bus-windows">
+                                <div class="bus-win"></div>
+                                <div class="bus-win"></div>
+                                <div class="bus-win"></div>
+                                <div class="bus-win windshield"></div>
+                            </div>
+                            <div class="bus-stripe"></div>
+                            <div class="bus-headlight"></div>
+                        </div>
+                        <div class="bus-wheel rear"></div>
+                        <div class="bus-wheel front"></div>
+                    </div>
+                    <div class="road-stripes"></div>
+                </div>
+
+                <div class="bus-login-card">
+                    <h3 style="text-align:center; color:#f472b6; font-size:19px; margin-bottom:4px; font-weight:800;">যাত্রী লগইন</h3>
+                    <p style="text-align:center; color:#cbd5e1; font-size:12px; margin-bottom:14px;">লগইন না করলে ভেতরে প্রবেশ করা যাবে না</p>
+
+                    <form onsubmit="handleUserBusLogin(event)">
+                        <div class="form-group">
+                            <label style="color:#e2e8f0;">আপনার পুরো নাম</label>
+                            <input type="text" id="bus-user-name" placeholder="যেমন: তামিম জয়" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:#e2e8f0;">মোবাইল নাম্বার</label>
+                            <input type="tel" id="bus-user-phone" placeholder="017XXXXXXXX" required>
+                        </div>
+                        <button type="submit" class="btn">লগইন করে যাত্রা শুরু করুন</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 2. USER HOME DASHBOARD
+            ========================================== -->
+            <div id="user-panel" class="screen">
+                <div class="app-top-header">
+                    <div class="live-clock-bar">
+                        <span id="live-date-text">তারিখ লোডিং...</span>
+                        <span id="live-clock-text" style="font-weight:800; letter-spacing:0.5px;">00:00:00 AM</span>
+                    </div>
+
+                    <div class="header-profile">
+                        <div>
+                            <p style="font-size: 11px; opacity: 0.85;">স্বাগতম,</p>
+                            <span class="profile-name" id="display-visitor-name">User</span>
+                            <div class="wallet-box">
+                                <span>ওয়ালেট ব্যালেন্স:</span>
+                                <b><span id="display-user-wallet">0</span> ৳</b>
+                            </div>
+                        </div>
+                        <div class="header-icons">
+                            <button class="icon-btn" onclick="openAddMoneyScreen()" title="Add Money">➕</button>
+                            <button class="icon-btn" onclick="openAdminListPopup()" title="Admin List">👥</button>
+                            <button class="icon-btn" onclick="showScreen('admin-login-screen')" title="Admin Panel">⚙️</button>
+                        </div>
+                    </div>
+
+                    <div class="search-bar-box">
+                        <span>🔍</span>
+                        <input type="text" id="search-input" placeholder="ইভেন্টের নাম দিয়ে খুঁজুন..." oninput="handleSearch()">
+                    </div>
+
+                    <button class="main-action-btn" onclick="filterEvents('all')">সকল ইভেন্ট দেখুন</button>
+                </div>
+
+                <!-- Grid 1 -->
+                <div class="service-grid">
+                    <div class="service-item" onclick="filterEvents('tour')">
+                        <div class="service-icon">🚌</div>
+                        <span>ট্যুর ইভেন্ট</span>
+                    </div>
+                    <div class="service-item" onclick="filterEvents('tshirt')">
+                        <div class="service-icon">👕</div>
+                        <span>টিশার্ট</span>
+                    </div>
+                    <div class="service-item" onclick="filterEvents('meetup')">
+                        <div class="service-icon">🤝</div>
+                        <span>মিট আপ</span>
+                    </div>
+                    <div class="service-item" onclick="openDonationScreen()">
+                        <div class="service-icon">💖</div>
+                        <span>ডোনেশন</span>
+                    </div>
+                </div>
+
+                <!-- Grid 2 -->
+                <div class="service-grid">
+                    <div class="service-item" onclick="openAddMoneyScreen()">
+                        <div class="service-icon">💳</div>
+                        <span>Add মানি</span>
+                    </div>
+                    <div class="service-item" onclick="openUserVotingScreen()">
+                        <div class="service-icon">🗳️</div>
+                        <span>ভোটগ্রহণ</span>
+                    </div>
+                    <div class="service-item" onclick="openWinnersScreen()">
+                        <div class="service-icon">🏆</div>
+                        <span>বিজয়ী</span>
+                    </div>
+                    <div class="service-item" onclick="openPaymentInfoModal()">
+                        <div class="service-icon">💸</div>
+                        <span>পেমেন্ট তথ্য</span>
+                    </div>
+                </div>
+
+                <!-- Notice Banner -->
+                <div class="notice-banner" onclick="alert(appSettings.noticeText)">
+                    <div class="notice-content">
+                        <h4>🔔 জরুরি নোটিশ</h4>
+                        <p id="display-notice-text">লোডিং...</p>
+                    </div>
+                    <span style="font-size: 18px; color: #166534;">›</span>
+                </div>
+
+                <h3 id="event-section-title" style="font-size:16px; font-weight:700; margin:12px 0 10px 0; color:#0f172a;">সকল ইভেন্টসমূহ</h3>
+                <div id="user-events-container"></div>
+            </div>
+
+            <!-- ==========================================
+                 3. USER VOTING MACHINE SCREEN
+            ========================================== -->
+            <div id="user-voting-screen" class="screen">
+                <span class="back-link" onclick="showScreen('user-panel')">← ফিরে যান</span>
+                <div id="user-voting-dynamic-area"></div>
+            </div>
+
+            <!-- ==========================================
+                 4. WINNERS ARCHIVE SCREEN
+            ========================================== -->
+            <div id="winners-screen" class="screen">
+                <span class="back-link" onclick="showScreen('user-panel')">← ফিরে যান</span>
+                <h3 style="font-size:18px; color:#db2777; margin-bottom:14px; font-weight:800;">🏆 প্রতিবারের বিজয়ী তালিকা</h3>
+                <div id="winners-list-container"></div>
+            </div>
+
+            <!-- ==========================================
+                 5. ADD MONEY SCREEN
+            ========================================== -->
+            <div id="add-money-screen" class="screen">
+                <span class="back-link" onclick="showScreen('user-panel')">← ফিরে যান</span>
+                <h3 style="font-size:18px; color:#db2777; margin-bottom:15px;">💳 Add মানি (ওয়ালেট রিচার্জ)</h3>
+
+                <form id="add-money-form" onsubmit="submitAddMoney(event)">
+                    <div class="form-group"><label>আপনার নাম</label><input type="text" id="addm-name" required></div>
+                    <div class="form-group"><label>মোবাইল নাম্বার</label><input type="tel" id="addm-phone" required></div>
+                    <div class="form-group"><label>টাকার পরিমাণ (৳)</label><input type="number" id="addm-amount" min="10" required></div>
+
+                    <label style="font-size:13px; color:var(--text-muted); font-weight:700; margin-bottom:8px; display:block;">পেমেন্ট মাধ্যম সিলেক্ট করুন:</label>
+                    <div id="addm-payment-options-container"></div>
+                    <input type="hidden" id="addm-selected-payment-method" required>
+
+                    <div class="form-group" style="margin-top:12px;"><label>ট্র্যাকিং ডিজিট (শেষ সংখ্যা)</label><input type="text" id="addm-digits" placeholder="যেমন: 55" required></div>
+
+                    <button type="submit" class="btn btn-success">Add মানি রিকোয়েস্ট পাঠান</button>
+                </form>
+            </div>
+
+            <!-- ==========================================
+                 6. EVENT BOOKING SCREEN
+            ========================================== -->
+            <div id="booking-screen" class="screen">
+                <span class="back-link" onclick="showScreen('user-panel')">← ফিরে যান</span>
+                <h3 id="booking-screen-title" style="font-size:18px; color:#db2777; margin-bottom:15px;">রেজিস্ট্রেশন ফরম</h3>
+
+                <form id="booking-form" onsubmit="submitBookingRequest(event)">
+                    <input type="hidden" id="selected-event-id">
+                    <div class="form-group"><label>আপনার নাম</label><input type="text" id="bk-name" required></div>
+                    <div class="form-group"><label>মোবাইল নাম্বার</label><input type="tel" id="bk-phone" required></div>
+                    <div class="form-group"><label>ঠিকানা</label><input type="text" id="bk-address" required></div>
+
+                    <div id="tour-seat-section" style="display:none;">
+                        <label style="font-size:13px; color:var(--text-muted); font-weight:700;">সিট সিলেক্ট করুন (২+২ লেআউট):</label>
+                        <div class="bus-layout-wrapper">
+                            <div class="driver-cabin">🚗 ড্রাইভার কেবিন</div>
+                            <div id="user-seat-layout"></div>
+                        </div>
+                        <input type="hidden" id="selected-seat">
+                    </div>
+
+                    <div id="tshirt-size-section" class="form-group" style="display:none;">
+                        <label>টিশার্ট সাইজ সিলেক্ট করুন</label>
+                        <select id="bk-tshirt-size">
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                            <option value="XXXL">XXXL</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group"><label>অ্যামাউন্ট (৳)</label><input type="number" id="bk-amount" min="1" required></div>
+
+                    <label style="font-size:13px; color:var(--text-muted); font-weight:700; margin-bottom:8px; display:block;">পেমেন্ট মাধ্যম সিলেক্ট করুন:</label>
+                    <div id="payment-options-container"></div>
+                    <input type="hidden" id="selected-payment-method" required>
+
+                    <div id="bk-digits-group" class="form-group" style="margin-top:12px;"><label>বিকাশ/নগদ নাম্বারের শেষ ট্র্যাকিং ডিজিট</label><input type="text" id="bk-last-digits" placeholder="যেমন: 45 বা 2108"></div>
+
+                    <button type="submit" class="btn btn-success">পেমেন্ট ও রিকোয়েস্ট জমা দিন</button>
+                </form>
+            </div>
+
+            <!-- ==========================================
+                 7. DONATION SCREEN
+            ========================================== -->
+            <div id="donation-screen" class="screen">
+                <span class="back-link" onclick="showScreen('user-panel')">← ফিরে যান</span>
+                <h3 style="font-size:18px; color:#db2777; margin-bottom:15px;">💖 ডোনেশন / ফান্ড কন্ট্রিবিউশন</h3>
+
+                <form id="donation-form" onsubmit="submitDonation(event)">
+                    <div class="form-group"><label>আপনার নাম</label><input type="text" id="don-name" required></div>
+                    <div class="form-group"><label>মোবাইল নাম্বার</label><input type="tel" id="don-phone" required></div>
+                    <div class="form-group"><label>ডোনেশনের পরিমাণ (৳)</label><input type="number" id="don-amount" min="10" required></div>
+
+                    <label style="font-size:13px; color:var(--text-muted); font-weight:700; margin-bottom:8px; display:block;">পেমেন্ট মাধ্যম সিলেক্ট করুন:</label>
+                    <div id="donation-payment-options-container"></div>
+                    <input type="hidden" id="don-selected-payment-method" required>
+
+                    <div id="don-digits-group" class="form-group" style="margin-top:12px;"><label>ট্র্যাকিং ডিজিট (শেষ সংখ্যা)</label><input type="text" id="don-digits" placeholder="যেমন: 88"></div>
+
+                    <button type="submit" class="btn btn-success">ডোনেশন জমা দিন</button>
+                </form>
+            </div>
+
+            <!-- ==========================================
+                 8. ADMIN LOGIN SCREEN
+            ========================================== -->
+            <div id="admin-login-screen" class="screen">
+                <span class="back-link" onclick="showScreen('user-panel')">← ফিরে যান</span>
+                <h2 class="auth-title">Admin Access</h2>
+                <div class="form-group"><label>ইউজারনেম</label><input type="text" id="admin-user-input" value="BGZ"></div>
+                <div class="form-group"><label>পাসওয়ার্ড</label><input type="password" id="admin-pass-input" placeholder="ডিফল্ট: 1230"></div>
+
+                <div style="text-align:center; margin:15px 0;">
+                    <button type="button" onclick="quickFingerprintLogin()" style="background:#f1f5f9; border:2px dashed #9333ea; padding:10px 20px; border-radius:12px; cursor:pointer; font-weight:700; color:#9333ea;">👆 ফিঙ্গারপ্রিন্ট / শর্টকাট লগইন</button>
+                </div>
+
+                <button class="btn btn-danger" onclick="handleAdminLogin()">অ্যাডমিন লগইন করুন</button>
+            </div>
+
+            <!-- ==========================================
+                 9. ADMIN MAIN DASHBOARD (DEDICATED NAV)
+            ========================================== -->
+            <div id="admin-panel" class="screen">
+                <div class="admin-top-header">
+                    <div class="header-profile">
+                        <div>
+                            <p style="font-size: 11px; opacity: 0.85;">অ্যাডমিন কন্ট্রোল</p>
+                            <span class="profile-name">BGZ Admin Panel</span>
+                        </div>
+                        <div class="header-icons">
+                            <button class="icon-btn" onclick="showScreen('user-panel')" title="User View">🏠</button>
+                            <button class="icon-btn" onclick="showScreen('user-panel')" title="Logout">🚪</button>
+                        </div>
+                    </div>
+                    <div class="search-bar-box">
+                        <span>⚙️</span>
+                        <input type="text" readonly value="যেকোনো আইকনে ক্লিক করে আলাদা পেজ খুলুন">
+                    </div>
+                </div>
+
+                <div class="service-grid">
+                    <div class="service-item" onclick="openAdminSubPage('admin-page-event')">
+                        <div class="service-icon">➕</div>
+                        <span>নতুন ইভেন্ট</span>
+                    </div>
+                    <div class="service-item" onclick="openAdminSubPage('admin-page-addmoney')">
+                        <div class="service-icon">💳</div>
+                        <span>Add মানি লিস্ট</span>
+                    </div>
+                    <div class="service-item" onclick="openAdminSubPage('admin-page-users')">
+                        <div class="service-icon">👤</div>
+                        <span>ইউজার লিস্ট</span>
+                    </div>
+                    <div class="service-item" onclick="openAdminSubPage('admin-page-settings')">
+                        <div class="service-icon">💸</div>
+                        <span>গেটওয়ে সেট</span>
+                    </div>
+                </div>
+
+                <div class="service-grid">
+                    <div class="service-item" onclick="openAdminSubPage('admin-page-history')">
+                        <div class="service-icon">📋</div>
+                        <span>বুকিং ও ফান্ড</span>
+                    </div>
+                    <div class="service-item" onclick="openAdminSubPage('admin-page-poll')">
+                        <div class="service-icon">🗳️</div>
+                        <span>ভোট সেটআপ</span>
+                    </div>
+                    <div class="service-item" onclick="openAdminSubPage('admin-page-winners')">
+                        <div class="service-icon">🏆</div>
+                        <span>বিজয়ী সেভ</span>
+                    </div>
+                    <div class="service-item" onclick="showScreen('user-panel')">
+                        <div class="service-icon">↩️</div>
+                        <span>ইউজার প্যানেল</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Sub-Page 1: Create & Delete Event -->
+            <div id="admin-page-event" class="screen">
+                <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <div class="event-card">
+                    <h4 style="font-size:15px; color:#db2777; margin-bottom:6px;">➕ নতুন ইভেন্ট তৈরি করুন</h4>
+                    <div class="form-group"><input type="text" id="new-ev-title" placeholder="ইভেন্টের নাম"></div>
+                    <div class="form-group"><input type="number" id="new-ev-fee" placeholder="নির্ধারিত ফি (৳)"></div>
+                    <div class="form-group">
+                        <label>ইভেন্টের ক্যাটাগরি</label>
+                        <select id="new-ev-type">
+                            <option value="tour">ট্যুর ইভেন্ট (সিট সহ)</option>
+                            <option value="tshirt">টিশার্ট ইভেন্ট</option>
+                            <option value="meetup">মিট আপ ইভেন্ট</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="createNewEvent()">ইভেন্ট পাবলিশ করুন</button>
+                </div>
+                <div id="admin-events-manage-list"></div>
+            </div>
+
+            <!-- Admin Sub-Page 2: Add Money Requests -->
+            <div id="admin-page-addmoney" class="screen">
+                <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <h3 style="font-size:17px; color:#047857; margin-bottom:12px;">💳 Add মানি রিকোয়েস্টসমূহ</h3>
+                <div id="admin-addmoney-list"></div>
+            </div>
+
+            <!-- Admin Sub-Page 3: Users List -->
+            <div id="admin-page-users" class="screen">
+                <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <h3 style="font-size:17px; color:#9333ea; margin-bottom:12px;">👤 লগইনকৃত ইউজারদের তালিকা</h3>
+                <div id="admin-users-list"></div>
+            </div>
+
+            <!-- Admin Sub-Page 4: Payment Gateway & Settings -->
+            <div id="admin-page-settings" class="screen">
+                <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <div class="event-card">
+                    <h4 style="font-size:15px; color:#0f172a; margin-bottom:8px;">⚙️ পেমেন্ট গেটওয়ে ও নোটিশ কন্ট্রোল</h4>
+                    <div class="form-group"><label>বিকাশ নাম্বার</label><input type="text" id="admin-bkash-num"></div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="admin-bkash-active"> বিকাশ অপশন চালু রাখুন</label>
+                    </div>
+                    <div class="form-group"><label>নগদ নাম্বার</label><input type="text" id="admin-nagad-num"></div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="admin-nagad-active"> নগদ অপশন চালু রাখুন</label>
+                    </div>
+                    <div class="form-group"><label>হোম নোটিশ টেক্সট</label><input type="text" id="admin-notice-input"></div>
+                    <div class="form-group"><label>নতুন অ্যাডমিন পাসওয়ার্ড</label><input type="password" id="new-admin-pass" placeholder="খালি রাখলে পরিবর্তন হবে না"></div>
+                    <button class="btn btn-danger" onclick="saveAdminSettings()">সেটিংস আপডেট করুন</button>
+                </div>
+            </div>
+
+            <!-- Admin Sub-Page 5: Bookings & Donations History -->
+            <div id="admin-page-history" class="screen">
+                <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <h3 style="font-size:17px; color:#0f172a; margin-bottom:10px;">📋 বুকিং ও ডোনেশন হিস্ট্রি</h3>
+                <div id="admin-bookings-list"></div>
+                <div id="admin-donations-list" style="margin-top:16px;"></div>
+            </div>
+
+            <!-- Admin Sub-Page 6: Poll Setup & Live Result -->
+            <div id="admin-page-poll" class="screen">
+                <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <div class="event-card">
+                    <h4 style="font-size:15px; color:#db2777; margin-bottom:8px;">🗳️ নতুন ভোটগ্রহণ তৈরি করুন (২টি ছবি ও বিবরণ)</h4>
+                    <div class="form-group"><label>ভোটের শিরোনাম</label><input type="text" id="poll-title-input" placeholder="যেমন: সেরা বাস বা সেরা টিশার্ট ডিজাইন"></div>
+                    <div class="form-group"><label>ভোট শেষ হওয়ার সময় (Deadline)</label><input type="datetime-local" id="poll-deadline-input"></div>
+
+                    <hr style="border:0; border-top:1px dashed #cbd5e1; margin:12px 0;">
+                    <b style="font-size:13px; color:#0f172a;">অপশন ১:</b>
+                    <div class="form-group" style="margin-top:6px;"><input type="text" id="poll-opt1-name" placeholder="অপশন ১ এর নাম"></div>
+                    <div class="form-group"><textarea id="poll-opt1-desc" rows="2" placeholder="অপশন ১ এর বিবরণ"></textarea></div>
+                    <div class="form-group"><label>গ্যালারি থেকে ছবি ১ আপলোড</label><input type="file" id="poll-opt1-file" accept="image/*" onchange="handlePollImageUpload(1, this)"></div>
+
+                    <hr style="border:0; border-top:1px dashed #cbd5e1; margin:12px 0;">
+                    <b style="font-size:13px; color:#0f172a;">অপশন ২:</b>
+                    <div class="form-group" style="margin-top:6px;"><input type="text" id="poll-opt2-name" placeholder="অপশন ২ এর নাম"></div>
+                    <div class="form-group"><textarea id="poll-opt2-desc" rows="2" placeholder="অপশন ২ এর বিবরণ"></textarea></div>
+                    <div class="form-group"><label>গ্যালারি থেকে ছবি ২ আপলোড</label><input type="file" id="poll-opt2-file" accept="image/*" onchange="handlePollImageUpload(2, this)"></div>
+
+                    <button class="btn btn-success" onclick="saveNewPoll()">ভোট চালু করুন</button>
+                </div>
+
+                <div id="admin-poll-result-box" class="event-card" style="margin-top:14px;"></div>
+            </div>
+
+            <!-- Admin Sub-Page 7: Save & Manage Winners -->
+            <div id="admin-page-winners" class="screen">
+                <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <div class="event-card">
+                    <h4 style="font-size:15px; color:#d97706; margin-bottom:8px;">🏆 বিজয়ী সেভ করুন</h4>
+                    <div class="form-group"><label>ইভেন্ট বা ভোটের নাম</label><input type="text" id="win-event-title" placeholder="যেমন: ফটো কনটেস্ট / ভোট"></div>
+                    <div class="form-group"><label>বিজয়ীর নাম / অপশন</label><input type="text" id="win-name-input" placeholder="বিজয়ীর নাম লিখুন"></div>
+                    <div class="form-group"><label>বিবরণ / পুরস্কার</label><input type="text" id="win-note-input" placeholder="যেমন: প্রথম স্থান অধিকারী"></div>
+                    <button class="btn" onclick="manualSaveWinner()">বিজয়ী লিস্টে সেভ করুন</button>
+                </div>
+                <div id="admin-winners-list"></div>
+            </div>
+        </div>
+
+        <div class="tamim-studio-watermark">© Tamim Studio</div>
+    </div>
+
+    <script>
+        let adminPass = localStorage.getItem('bgz_admin_pass') || '1230';
+        let visitorName = localStorage.getItem('bgz_visitor_name') || '';
+        let visitorPhone = localStorage.getItem('bgz_visitor_phone') || '';
+        let userWallet = Number(localStorage.getItem('bgz_user_wallet')) || 0;
+        let registeredUsers = JSON.parse(localStorage.getItem('bgz_registered_users')) || [];
+        let addMoneyRequests = JSON.parse(localStorage.getItem('bgz_addmoney_requests')) || [];
+        let winnersHistory = JSON.parse(localStorage.getItem('bgz_winners_history')) || [];
+
+        let appSettings = JSON.parse(localStorage.getItem('bgz_app_settings')) || {
+            bkashNumber: "01731-222108",
+            bkashActive: true,
+            nagadNumber: "01800-000000",
+            nagadActive: true,
+            noticeText: "ঈদুল ফিতর স্পেশাল বাস টিকেট এবং টিশার্ট বুকিং চলছে!"
+        };
+
+        let eventsData = JSON.parse(localStorage.getItem('bgz_events_data')) || [
+            { id: 1, title: "ঈদুল ফিতর স্পেশাল - ঢাকা টু গাবতলী", type: "tour", fee: 800, seats: generateSeats(), bookings: [] },
+            { id: 2, title: "Official Community T-Shirt 2026", type: "tshirt", fee: 450, bookings: [] }
+        ];
+
+        let donationsData = JSON.parse(localStorage.getItem('bgz_donations_data')) || [];
+
+        let pollData = JSON.parse(localStorage.getItem('bgz_poll_data')) || {
+            active: false,
+            title: "",
+            deadline: 0,
+            resultPublished: false,
+            winnerSaved: false,
+            opt1: { name: "", desc: "", img: "", votes: 0 },
+            opt2: { name: "", desc: "", img: "", votes: 0 },
+            voters: []
+        };
+
+        let uploadedPollImg1 = "";
+        let uploadedPollImg2 = "";
+        let lastVotedOpt = null;
+
+        window.onload = function() {
+            startLiveClock();
+            document.getElementById('display-notice-text').innerText = appSettings.noticeText;
+            renderUserEvents();
+
+            // Always show mandatory Bus Login screen on app entry
+            showScreen('user-bus-login-screen');
+        };
+
+        function updateUserDisplay() {
+            document.getElementById('display-visitor-name').innerText = visitorName || 'User';
+            document.getElementById('display-user-wallet').innerText = userWallet;
+        }
+
+        function handleUserBusLogin(e) {
+            e.preventDefault();
+            const uName = document.getElementById('bus-user-name').value.trim();
+            const uPhone = document.getElementById('bus-user-phone').value.trim();
+            if(!uName || !uPhone) return;
+
+            visitorName = uName;
+            visitorPhone = uPhone;
+            localStorage.setItem('bgz_visitor_name', visitorName);
+            localStorage.setItem('bgz_visitor_phone', visitorPhone);
+
+            const existingIdx = registeredUsers.findIndex(u => u.phone === uPhone);
+            if(existingIdx > -1) {
+                registeredUsers[existingIdx].name = uName;
+                registeredUsers[existingIdx].lastLogin = new Date().toLocaleString();
+            } else {
+                registeredUsers.push({ name: uName, phone: uPhone, lastLogin: new Date().toLocaleString() });
+            }
+            localStorage.setItem('bgz_registered_users', JSON.stringify(registeredUsers));
+
+            updateUserDisplay();
+            showScreen('user-panel');
+        }
+
+        function startLiveClock() {
+            setInterval(() => {
+                let now = new Date();
+                let timeString = now.toLocaleTimeString();
+                let dateString = now.toLocaleDateString('bn-BD', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                let clockEl = document.getElementById('live-clock-text');
+                let dateEl = document.getElementById('live-date-text');
+                if(clockEl) clockEl.innerText = timeString;
+                if(dateEl) dateEl.innerText = dateString;
+
+                checkAutoPollResult();
+            }, 1000);
+        }
+
+        function saveData() {
+            localStorage.setItem('bgz_events_data', JSON.stringify(eventsData));
+            localStorage.setItem('bgz_donations_data', JSON.stringify(donationsData));
+            localStorage.setItem('bgz_app_settings', JSON.stringify(appSettings));
+            localStorage.setItem('bgz_addmoney_requests', JSON.stringify(addMoneyRequests));
+            localStorage.setItem('bgz_user_wallet', String(userWallet));
+            localStorage.setItem('bgz_poll_data', JSON.stringify(pollData));
+            localStorage.setItem('bgz_winners_history', JSON.stringify(winnersHistory));
+        }
+
+        function generateSeats() {
+            let seats = {};
+            let rows = ['A','B','C','D','E','F','G','H','I','J'];
+            rows.forEach(r => {
+                seats[r+'1'] = { status: 'available', user: null };
+                seats[r+'2'] = { status: 'available', user: null };
+                seats[r+'3'] = { status: 'available', user: null };
+                seats[r+'4'] = { status: 'available', user: null };
+            });
+            return seats;
+        }
+
+        let currentActiveEventId = null;
+        let currentFilter = 'all';
+
+        function showScreen(screenId) {
+            if(screenId !== 'user-bus-login-screen' && (!visitorName || !visitorPhone)) {
+                screenId = 'user-bus-login-screen';
+            }
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+            if(screenId === 'user-panel') {
+                updateUserDisplay();
+                renderUserEvents();
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // ==========================================
+        // VOTING & WINNERS SYSTEM
+        // ==========================================
+        function handlePollImageUpload(optNum, input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if(optNum === 1) uploadedPollImg1 = e.target.result;
+                if(optNum === 2) uploadedPollImg2 = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveNewPoll() {
+            const title = document.getElementById('poll-title-input').value.trim();
+            const deadlineVal = document.getElementById('poll-deadline-input').value;
+            const n1 = document.getElementById('poll-opt1-name').value.trim();
+            const d1 = document.getElementById('poll-opt1-desc').value.trim();
+            const n2 = document.getElementById('poll-opt2-name').value.trim();
+            const d2 = document.getElementById('poll-opt2-desc').value.trim();
+
+            if(!title || !deadlineVal || !n1 || !n2) {
+                alert("ভোটের শিরোনাম, শেষ সময় এবং ২টি অপশনের নাম দিন!");
+                return;
+            }
+
+            const deadlineMs = new Date(deadlineVal).getTime();
+            if(isNaN(deadlineMs)) {
+                alert("সঠিক সময় নির্বাচন করুন!");
+                return;
+            }
+
+            pollData = {
+                active: true,
+                title: title,
+                deadline: deadlineMs,
+                resultPublished: false,
+                winnerSaved: false,
+                opt1: { name: n1, desc: d1, img: uploadedPollImg1 || "", votes: 0 },
+                opt2: { name: n2, desc: d2, img: uploadedPollImg2 || "", votes: 0 },
+                voters: []
+            };
+            lastVotedOpt = null;
+            uploadedPollImg1 = "";
+            uploadedPollImg2 = "";
+            saveData();
+            alert("ভোটগ্রহণ সফলভাবে চালু হয়েছে!");
+            renderAdminPollPage();
+        }
+
+        function deleteCurrentPoll() {
+            if(confirm("আপনি কি নিশ্চিতভাবে বর্তমান ভোটগ্রহণটি ডিলিট করতে চান? এর সব ভোট ও তথ্য মুছে যাবে।")) {
+                pollData = {
+                    active: false,
+                    title: "",
+                    deadline: 0,
+                    resultPublished: false,
+                    winnerSaved: false,
+                    opt1: { name: "", desc: "", img: "", votes: 0 },
+                    opt2: { name: "", desc: "", img: "", votes: 0 },
+                    voters: []
+                };
+                lastVotedOpt = null;
+                saveData();
+                alert("ভোটগ্রহণ ডিলিট করা হয়েছে!");
+                renderAdminPollPage();
+            }
+        }
+
+        function checkAutoPollResult() {
+            if(!pollData.active) return;
+            const now = Date.now();
+            const oneHourMs = 60 * 60 * 1000;
+
+            if(now >= pollData.deadline + oneHourMs && !pollData.resultPublished) {
+                pollData.resultPublished = true;
+                if(!pollData.winnerSaved) {
+                    const winnerOpt = pollData.opt1.votes >= pollData.opt2.votes ? pollData.opt1 : pollData.opt2;
+                    winnersHistory.unshift({
+                        id: Date.now(),
+                        eventTitle: pollData.title,
+                        winnerName: winnerOpt.name,
+                        note: `ভোট: ${winnerOpt.votes} (অটো প্রকাশিত ফলাফল)`,
+                        date: new Date().toLocaleDateString('bn-BD')
+                    });
+                    pollData.winnerSaved = true;
+                }
+                saveData();
+            }
+        }
+
+        function openUserVotingScreen() {
+            checkAutoPollResult();
+            showScreen('user-voting-screen');
+            renderUserVotingScreen();
+        }
+
+        function renderUserVotingScreen() {
+            checkAutoPollResult();
+            const area = document.getElementById('user-voting-dynamic-area');
+
+            if(!pollData.active) {
+                area.innerHTML = `
+                    <div class="event-card" style="text-align:center; padding:24px;">
+                        <h3 style="color:#db2777; margin-bottom:8px;">🗳️ ভোটগ্রহণ</h3>
+                        <p style="font-size:13px; color:#64748b;">বর্তমানে কোনো সক্রিয় ভোটগ্রহণ নেই।</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const now = Date.now();
+            const oneHourMs = 60 * 60 * 1000;
+            const totalVotes = pollData.opt1.votes + pollData.opt2.votes;
+            const p1 = totalVotes > 0 ? Math.round((pollData.opt1.votes / totalVotes) * 100) : 0;
+            const p2 = totalVotes > 0 ? Math.round((pollData.opt2.votes / totalVotes) * 100) : 0;
+
+            if(now < pollData.deadline) {
+                const alreadyVoted = pollData.voters.includes(visitorPhone || visitorName);
+                area.innerHTML = `
+                    <div class="evm-machine">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:12px; font-weight:800; color:#fbbf24;">⚡ রিয়েল ভোটিং মেশিন</span>
+                            <span class="evm-lamp active"></span>
+                        </div>
+                        <h3 style="font-size:16px; margin-bottom:6px;">${pollData.title}</h3>
+                        <p style="font-size:11px; color:#94a3b8; margin-bottom:14px;">ভোট শেষ হবে: ${new Date(pollData.deadline).toLocaleString('bn-BD')}</p>
+
+                        <div id="cand-card-1" class="vote-candidate-card ${lastVotedOpt === 1 ? 'voted-anim' : ''}">
+                            ${pollData.opt1.img ? `<img src="${pollData.opt1.img}" class="vote-img-preview" alt="Option 1">` : ''}
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                                <div>
+                                    <b style="font-size:15px; color:#fff;">${pollData.opt1.name}</b>
+                                    <p style="font-size:12px; color:#cbd5e1; margin-top:3px;">${pollData.opt1.desc || ''}</p>
+                                </div>
+                                <span id="lamp-1" class="evm-lamp ${lastVotedOpt === 1 ? 'active' : ''}"></span>
+                            </div>
+                            <button class="btn btn-success" style="margin-top:10px;" ${alreadyVoted ? 'disabled' : ''} onclick="castVote(1)">
+                                ${alreadyVoted ? 'ভোট সম্পন্ন হয়েছে' : 'ভোট দিন'}
+                            </button>
+                        </div>
+
+                        <div id="cand-card-2" class="vote-candidate-card ${lastVotedOpt === 2 ? 'voted-anim' : ''}">
+                            ${pollData.opt2.img ? `<img src="${pollData.opt2.img}" class="vote-img-preview" alt="Option 2">` : ''}
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                                <div>
+                                    <b style="font-size:15px; color:#fff;">${pollData.opt2.name}</b>
+                                    <p style="font-size:12px; color:#cbd5e1; margin-top:3px;">${pollData.opt2.desc || ''}</p>
+                                </div>
+                                <span id="lamp-2" class="evm-lamp ${lastVotedOpt === 2 ? 'active' : ''}"></span>
+                            </div>
+                            <button class="btn btn-success" style="margin-top:10px;" ${alreadyVoted ? 'disabled' : ''} onclick="castVote(2)">
+                                ${alreadyVoted ? 'ভোট সম্পন্ন হয়েছে' : 'ভোট দিন'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            if(now >= pollData.deadline && now < pollData.deadline + oneHourMs && !pollData.resultPublished) {
+                const remainMin = Math.max(1, Math.ceil((pollData.deadline + oneHourMs - now) / 60000));
+                area.innerHTML = `
+                    <div class="event-card" style="text-align:center; padding:24px; border-left:5px solid #f59e0b;">
+                        <div style="font-size:34px; margin-bottom:8px;">⏳</div>
+                        <h3 style="color:#d97706; font-size:17px; margin-bottom:8px;">১ ঘন্টা পর ফল প্রকাশ করা হবে</h3>
+                        <p style="font-size:13px; color:#475569;">ভোটগ্রহণের সময় শেষ হয়েছে। আনুমানিক <b>${remainMin} মিনিট</b> পর ফলাফল স্বয়ংক্রিয়ভাবে প্রকাশিত হবে।</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const winner = pollData.opt1.votes >= pollData.opt2.votes ? pollData.opt1 : pollData.opt2;
+            area.innerHTML = `
+                <div class="event-card" style="border-left:5px solid #10b981;">
+                    <span class="event-badge badge-tour">চূড়ান্ত ফলাফল প্রকাশিত</span>
+                    <h3 style="font-size:17px; color:#0f172a; margin-top:4px;">${pollData.title}</h3>
+                    <div style="background:#f0fdf4; padding:12px; border-radius:12px; margin:8px 0;">
+                        <b style="color:#047857; font-size:14px;">🏆 বিজয়ী: ${winner.name}</b>
+                    </div>
+
+                    <div style="margin-top:8px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px;">
+                            <b>${pollData.opt1.name}</b>
+                            <span>${pollData.opt1.votes} ভোট (${p1}%)</span>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill" style="width:${p1}%;"></div></div>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px;">
+                            <b>${pollData.opt2.name}</b>
+                            <span>${pollData.opt2.votes} ভোট (${p2}%)</span>
+                        </div>
+                        <div class="progress-track"><div class="progress-fill" style="width:${p2}%;"></div></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function castVote(optNum) {
+            if(Date.now() >= pollData.deadline) {
+                alert("ভোট দেওয়ার সময় শেষ হয়ে গেছে!");
+                renderUserVotingScreen();
+                return;
+            }
+
+            const voterKey = visitorPhone || visitorName || 'Guest';
+            if(pollData.voters.includes(voterKey)) {
+                alert("আপনি ইতিমধ্যে ভোট দিয়েছেন!");
+                return;
+            }
+
+            if(optNum === 1) pollData.opt1.votes += 1;
+            if(optNum === 2) pollData.opt2.votes += 1;
+            pollData.voters.push(voterKey);
+            lastVotedOpt = optNum;
+            saveData();
+
+            const lamp = document.getElementById(`lamp-${optNum}`);
+            if(lamp) lamp.classList.add('active');
+
+            setTimeout(() => {
+                alert("বিপ! আপনার ভোট সফলভাবে রেকর্ড হয়েছে।");
+                renderUserVotingScreen();
+            }, 350);
+        }
+
+        function openWinnersScreen() {
+            checkAutoPollResult();
+            showScreen('winners-screen');
+            const container = document.getElementById('winners-list-container');
+            if(winnersHistory.length === 0) {
+                container.innerHTML = `<div class="event-card" style="text-align:center;"><p style="font-size:13px; color:#64748b;">এখনো কোনো বিজয়ীর তথ্য সেভ হয়নি।</p></div>`;
+                return;
+            }
+
+            container.innerHTML = winnersHistory.map(w => `
+                <div class="event-card" style="border-left:5px solid #f59e0b;">
+                    <span class="event-badge badge-meetup">🏆 বিজয়ী</span>
+                    <h4 style="font-size:15px; color:#0f172a;">${w.winnerName}</h4>
+                    <p style="font-size:12px; color:#db2777; font-weight:700;">ইভেন্ট/ভোট: ${w.eventTitle}</p>
+                    <p style="font-size:12px; color:#64748b;">${w.note || ''} • ${w.date}</p>
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // EVENTS, ADD MONEY, BOOKING & DONATION
+        // ==========================================
+        function renderUserEvents(filterText = '') {
+            let container = document.getElementById('user-events-container');
+            container.innerHTML = '';
+
+            let filtered = eventsData.filter(ev => {
+                let matchType = (currentFilter === 'all' || ev.type === currentFilter);
+                let matchSearch = ev.title.toLowerCase().includes(filterText.toLowerCase());
+                return matchType && matchSearch;
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#64748b; font-size:13px; padding:20px;">কোনো ইভেন্ট পাওয়া যায়নি।</p>`;
+                return;
+            }
+
+            filtered.forEach(ev => {
+                let badgeClass = ev.type === 'tour' ? 'badge-tour' : (ev.type === 'tshirt' ? 'badge-tshirt' : 'badge-meetup');
+                let typeName = ev.type === 'tour' ? 'ট্যুর ইভেন্ট' : (ev.type === 'tshirt' ? 'টিশার্ট ইভেন্ট' : 'মিট আপ ইভেন্ট');
+
+                container.innerHTML += `
+                    <div class="event-card">
+                        <span class="event-badge ${badgeClass}">${typeName}</span>
+                        <h4 style="font-size:15px; font-weight:700;">${ev.title}</h4>
+                        <p style="font-size:14px; color:#10b981; font-weight:800;">ফি: ${ev.fee} ৳</p>
+                        <button class="btn" style="margin-top:6px;" onclick="openBookingScreen(${ev.id})">বুকিং / রেজিস্ট্রেশন করুন</button>
+                    </div>
+                `;
+            });
+        }
+
+        function filterEvents(type) {
+            currentFilter = type;
+            let titles = { 'all': 'সকল ইভেন্টসমূহ', 'tour': 'ট্যুর ইভেন্টসমূহ', 'tshirt': 'টিশার্ট ইভেন্টসমূহ', 'meetup': 'মিট আপ ইভেন্টসমূহ' };
+            document.getElementById('event-section-title').innerText = titles[type];
+            renderUserEvents();
+        }
+
+        function handleSearch() {
+            let query = document.getElementById('search-input').value;
+            renderUserEvents(query);
+        }
+
+        function openAddMoneyScreen() {
+            document.getElementById('add-money-form').reset();
+            document.getElementById('addm-name').value = visitorName;
+            document.getElementById('addm-phone').value = visitorPhone;
+            setupPaymentOptions('addm-payment-options-container', 'addm-selected-payment-method', false);
+            showScreen('add-money-screen');
+        }
+
+        function showSlipModal(status, title, category, name, phone, amount, method, digits, extraInfo) {
+            const isApproved = status === 'Approved';
+            document.getElementById('slip-modal-box').style.borderTopColor = isApproved ? '#10b981' : '#f59e0b';
+            document.getElementById('slip-modal-heading').innerText = isApproved ? '✅ পেমেন্ট সফল ও কনফার্ম হয়েছে!' : '⏳ পেমেন্ট পেন্ডিং অবস্থায় আছে!';
+            document.getElementById('slip-modal-heading').style.color = isApproved ? '#10b981' : '#d97706';
+            document.getElementById('slip-modal-subtext').innerText = isApproved ? 'ওয়ালেট ব্যালেন্স থেকে টাকা কেটে নেওয়া হয়েছে এবং বুকিং সম্পন্ন হয়েছে।' : 'অ্যাডমিন যাচাই করার পর এটি এপ্রুভ করা হবে।';
+
+            const badge = document.getElementById('slip-status-badge');
+            badge.innerText = status.toUpperCase();
+            badge.style.color = isApproved ? '#10b981' : '#d97706';
+
+            document.getElementById('slip-event-title').innerText = title;
+            document.getElementById('slip-event-type').innerText = category;
+            document.getElementById('slip-user-name').innerText = name;
+            document.getElementById('slip-user-phone').innerText = phone;
+            document.getElementById('slip-total-fee').innerText = amount + " ৳";
+            document.getElementById('slip-payment-method').innerText = method;
+            document.getElementById('slip-digits').innerText = digits;
+
+            if(extraInfo) {
+                document.getElementById('slip-extra-row').style.display = 'flex';
+                document.getElementById('slip-extra-val').innerText = extraInfo;
+            } else {
+                document.getElementById('slip-extra-row').style.display = 'none';
+            }
+
+            document.getElementById('slip-modal-overlay').style.display = 'flex';
+        }
+
+        function submitAddMoney(e) {
+            e.preventDefault();
+            let paymentMethod = document.getElementById('addm-selected-payment-method').value;
+            if(!paymentMethod) { alert("দয়া করে একটি পেমেন্ট মাধ্যম সিলেক্ট করুন!"); return; }
+
+            let name = document.getElementById('addm-name').value;
+            let phone = document.getElementById('addm-phone').value;
+            let amount = Number(document.getElementById('addm-amount').value);
+            let digits = document.getElementById('addm-digits').value;
+
+            addMoneyRequests.push({
+                id: Date.now(), name, phone, amount, paymentMethod, digits,
+                status: 'Pending', date: new Date().toLocaleDateString()
+            });
+            saveData();
+
+            showSlipModal('Pending', 'Wallet Add Money', 'ADD MONEY', name, phone, amount, paymentMethod, digits, null);
+        }
+
+        function openBookingScreen(id) {
+            let ev = eventsData.find(e => e.id === id);
+            currentActiveEventId = id;
+            document.getElementById('selected-event-id').value = id;
+            document.getElementById('booking-screen-title').innerText = ev.title;
+            document.getElementById('booking-form').reset();
+
+            document.getElementById('bk-name').value = visitorName;
+            document.getElementById('bk-phone').value = visitorPhone;
+            document.getElementById('bk-amount').value = ev.fee;
+            document.getElementById('bk-digits-group').style.display = 'block';
+
+            if(ev.type === 'tour') {
+                document.getElementById('tour-seat-section').style.display = 'block';
+                document.getElementById('tshirt-size-section').style.display = 'none';
+                renderSeatLayout('user-seat-layout', ev);
+            } else if(ev.type === 'tshirt') {
+                document.getElementById('tour-seat-section').style.display = 'none';
+                document.getElementById('tshirt-size-section').style.display = 'block';
+            } else {
+                document.getElementById('tour-seat-section').style.display = 'none';
+                document.getElementById('tshirt-size-section').style.display = 'none';
+            }
+
+            setupPaymentOptions('payment-options-container', 'selected-payment-method', true, 'bk-digits-group');
+            showScreen('booking-screen');
+        }
+
+        function openDonationScreen() {
+            document.getElementById('donation-form').reset();
+            document.getElementById('don-name').value = visitorName;
+            document.getElementById('don-phone').value = visitorPhone;
+            document.getElementById('don-digits-group').style.display = 'block';
+            setupPaymentOptions('donation-payment-options-container', 'don-selected-payment-method', true, 'don-digits-group');
+            showScreen('donation-screen');
+        }
+
+        function setupPaymentOptions(containerId, hiddenInputId, includeWallet = false, digitsGroupId = null) {
+            let container = document.getElementById(containerId);
+            container.innerHTML = '';
+            document.getElementById(hiddenInputId).value = '';
+
+            let optionsHtml = '';
+
+            if(includeWallet) {
+                optionsHtml += `
+                    <div class="payment-box-option wallet-option" onclick="selectPaymentOption('${containerId}', '${hiddenInputId}', 'Wallet', this, '${digitsGroupId}')">
+                        <span style="font-size:20px;">💰</span>
+                        <div><b>আমার ওয়ালেট ব্যালেন্স</b><br><span style="font-size:12px; color:#047857; font-weight:700;">বর্তমান ব্যালেন্স: ${userWallet} ৳ (তাৎক্ষণিক এপ্রুভ)</span></div>
+                    </div>
+                `;
+            }
+
+            if(appSettings.bkashActive) {
+                optionsHtml += `
+                    <div class="payment-box-option" onclick="selectPaymentOption('${containerId}', '${hiddenInputId}', 'bKash', this, '${digitsGroupId}')">
+                        <span style="font-size:20px;">📱</span>
+                        <div><b>bKash (বিকাশ)</b><br><span style="font-size:12px; color:#64748b;">সেন্ট মানি: ${appSettings.bkashNumber}</span></div>
+                    </div>
+                `;
+            }
+            if(appSettings.nagadActive) {
+                optionsHtml += `
+                    <div class="payment-box-option" onclick="selectPaymentOption('${containerId}', '${hiddenInputId}', 'Nagad', this, '${digitsGroupId}')">
+                        <span style="font-size:20px;">🟠</span>
+                        <div><b>Nagad (নগদ)</b><br><span style="font-size:12px; color:#64748b;">সেন্ট মানি: ${appSettings.nagadNumber}</span></div>
+                    </div>
+                `;
+            }
+
+            if(optionsHtml === '') {
+                optionsHtml = `<p style="font-size:12px; color:#ef4444;">বর্তমানে কোনো পেমেন্ট মাধ্যম চালু নেই।</p>`;
+            }
+            container.innerHTML = optionsHtml;
+        }
+
+        function selectPaymentOption(containerId, hiddenInputId, method, element, digitsGroupId) {
+            document.querySelectorAll(`#${containerId} .payment-box-option`).forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById(hiddenInputId).value = method;
+
+            if(digitsGroupId && document.getElementById(digitsGroupId)) {
+                document.getElementById(digitsGroupId).style.display = (method === 'Wallet') ? 'none' : 'block';
+            }
+        }
+
+        function renderSeatLayout(containerId, ev) {
+            let container = document.getElementById(containerId);
+            container.innerHTML = '';
+            let rows = ['A','B','C','D','E','F','G','H','I','J'];
+
+            rows.forEach(r => {
+                let rowDiv = document.createElement('div');
+                rowDiv.className = 'seat-row';
+
+                for(let i=1; i<=4; i++) {
+                    let sId = r + i;
+                    let seatObj = ev.seats[sId];
+                    let div = document.createElement('div');
+                    div.className = `seat ${seatObj.status}`;
+                    div.innerText = sId;
+
+                    if(seatObj.status === 'available') {
+                        div.onclick = (e) => selectSeat(sId, e);
+                    }
+                    rowDiv.appendChild(div);
+
+                    if(i === 2) {
+                        let aisle = document.createElement('div');
+                        aisle.className = 'seat-aisle';
+                        aisle.innerText = r;
+                        rowDiv.appendChild(aisle);
+                    }
+                }
+                container.appendChild(rowDiv);
+            });
+        }
+
+        function selectSeat(seatId, e) {
+            document.querySelectorAll('#user-seat-layout .seat').forEach(s => {
+                if(!s.classList.contains('booked')) s.classList.remove('selected');
+            });
+            e.target.classList.add('selected');
+            document.getElementById('selected-seat').value = seatId;
+        }
+
+        function submitBookingRequest(e) {
+            e.preventDefault();
+            let paymentMethod = document.getElementById('selected-payment-method').value;
+            if(!paymentMethod) { alert("দয়া করে একটি পেমেন্ট মাধ্যম সিলেক্ট করুন!"); return; }
+
+            let ev = eventsData.find(e => e.id === currentActiveEventId);
+            let name = document.getElementById('bk-name').value;
+            let phone = document.getElementById('bk-phone').value;
+            let address = document.getElementById('bk-address').value;
+            let amount = Number(document.getElementById('bk-amount').value);
+            let digits = document.getElementById('bk-last-digits').value.trim();
+
+            if(paymentMethod !== 'Wallet' && !digits) {
+                alert("দয়া করে বিকাশ/নগদ নাম্বারের শেষ ট্র্যাকিং ডিজিট দিন!");
+                return;
+            }
+
+            let extraInfo = null;
+            let seatId = null;
+            if(ev.type === 'tour') {
+                seatId = document.getElementById('selected-seat').value;
+                if(!seatId) { alert("দয়া করে একটি সিট সিলেক্ট করুন!"); return; }
+                extraInfo = `সিট: ${seatId}`;
+            } else if(ev.type === 'tshirt') {
+                extraInfo = `টিশার্ট সাইজ: ` + document.getElementById('bk-tshirt-size').value;
+            }
+
+            let bookingStatus = 'Pending';
+
+            if(paymentMethod === 'Wallet') {
+                if(userWallet < amount) {
+                    alert(`আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! প্রয়োজন: ${amount} ৳, বর্তমান ব্যালেন্স: ${userWallet} ৳। প্রথমে Add মানি করুন।`);
+                    return;
+                }
+                userWallet -= amount;
+                bookingStatus = 'Approved';
+                digits = 'WALLET-PAY';
+                if(ev.type === 'tour' && seatId && ev.seats[seatId]) {
+                    ev.seats[seatId].status = 'booked';
+                    ev.seats[seatId].user = name;
+                }
+            }
+
+            ev.bookings.push({ id: Date.now(), name, phone, address, amount, digits, paymentMethod, extraInfo, status: bookingStatus });
+            saveData();
+            updateUserDisplay();
+
+            showSlipModal(bookingStatus, ev.title, ev.type.toUpperCase(), name, phone, amount, paymentMethod, digits, extraInfo);
+        }
+
+        function submitDonation(e) {
+            e.preventDefault();
+            let paymentMethod = document.getElementById('don-selected-payment-method').value;
+            if(!paymentMethod) { alert("দয়া করে একটি পেমেন্ট মাধ্যম সিলেক্ট করুন!"); return; }
+
+            let name = document.getElementById('don-name').value;
+            let phone = document.getElementById('don-phone').value;
+            let amount = Number(document.getElementById('don-amount').value);
+            let digits = document.getElementById('don-digits').value.trim();
+
+            if(paymentMethod !== 'Wallet' && !digits) {
+                alert("দয়া করে ট্র্যাকিং ডিজিট দিন!");
+                return;
+            }
+
+            let donStatus = 'Pending';
+            if(paymentMethod === 'Wallet') {
+                if(userWallet < amount) {
+                    alert(`আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! বর্তমান ব্যালেন্স: ${userWallet} ৳`);
+                    return;
+                }
+                userWallet -= amount;
+                donStatus = 'Approved';
+                digits = 'WALLET-PAY';
+            }
+
+            donationsData.push({ id: Date.now(), name, phone, amount, paymentMethod, digits, status: donStatus, date: new Date().toLocaleDateString() });
+            saveData();
+            updateUserDisplay();
+
+            showSlipModal(donStatus, 'Community Donation / Fund', 'DONATION', name, phone, amount, paymentMethod, digits, null);
+        }
+
+        function downloadInvoiceSlip() {
+            html2canvas(document.getElementById('invoice-slip-capture')).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'bgz-slip.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function openPaymentInfoModal() {
+            let content = `<p style="margin-bottom:8px;">💰 <b>ওয়ালেট ব্যালেন্স:</b> ${userWallet} ৳</p>`;
+            if(appSettings.bkashActive) content += `<p>📱 <b>bKash (সেন্ট মানি):</b> ${appSettings.bkashNumber}</p>`;
+            if(appSettings.nagadActive) content += `<p style="margin-top:8px;">🟠 <b>Nagad (সেন্ট মানি):</b> ${appSettings.nagadNumber}</p>`;
+            if(!appSettings.bkashActive && !appSettings.nagadActive) content += `<p style="margin-top:8px;">বর্তমানে মোবাইল ব্যাংকিং মাধ্যম বন্ধ রয়েছে।</p>`;
+
+            document.getElementById('payment-info-content').innerHTML = content;
+            document.getElementById('payment-info-modal').style.display = 'flex';
+        }
+
+        // ==========================================
+        // ADMIN DEDICATED SUB-PAGES
+        // ==========================================
+        function handleAdminLogin() {
+            let u = document.getElementById('admin-user-input').value;
+            let p = document.getElementById('admin-pass-input').value;
+            if(u === 'BGZ' && p === adminPass) {
+                showScreen('admin-panel');
+            } else {
+                alert("ভুল পাসওয়ার্ড! (ডিফল্ট: 1230)");
+            }
+        }
+
+        function quickFingerprintLogin() {
+            let pin = prompt("ফিঙ্গারপ্রিন্ট সিমুলেশন: অ্যাডমিন পিন বা পাসওয়ার্ড দিন (ডিফল্ট: 1230):");
+            if(pin === adminPass) {
+                showScreen('admin-panel');
+            } else if(pin !== null) {
+                alert("ভুল পিন!");
+            }
+        }
+
+        function openAdminSubPage(pageId) {
+            showScreen(pageId);
+            if(pageId === 'admin-page-event') renderAdminEventsPage();
+            if(pageId === 'admin-page-addmoney') renderAdminAddMoneyPage();
+            if(pageId === 'admin-page-users') renderAdminUsersPage();
+            if(pageId === 'admin-page-settings') renderAdminSettingsPage();
+            if(pageId === 'admin-page-history') renderAdminHistoryPage();
+            if(pageId === 'admin-page-poll') renderAdminPollPage();
+            if(pageId === 'admin-page-winners') renderAdminWinnersPage();
+        }
+
+        function renderAdminSettingsPage() {
+            document.getElementById('admin-bkash-num').value = appSettings.bkashNumber;
+            document.getElementById('admin-bkash-active').checked = appSettings.bkashActive;
+            document.getElementById('admin-nagad-num').value = appSettings.nagadNumber;
+            document.getElementById('admin-nagad-active').checked = appSettings.nagadActive;
+            document.getElementById('admin-notice-input').value = appSettings.noticeText;
+            document.getElementById('new-admin-pass').value = '';
+        }
+
+        function saveAdminSettings() {
+            appSettings.bkashNumber = document.getElementById('admin-bkash-num').value;
+            appSettings.bkashActive = document.getElementById('admin-bkash-active').checked;
+            appSettings.nagadNumber = document.getElementById('admin-nagad-num').value;
+            appSettings.nagadActive = document.getElementById('admin-nagad-active').checked;
+            appSettings.noticeText = document.getElementById('admin-notice-input').value;
+
+            let newP = document.getElementById('new-admin-pass').value;
+            if(newP) {
+                adminPass = newP;
+                localStorage.setItem('bgz_admin_pass', adminPass);
+            }
+
+            saveData();
+            document.getElementById('display-notice-text').innerText = appSettings.noticeText;
+            alert("অ্যাডমিন সেটিংস সফলভাবে আপডেট করা হয়েছে!");
+        }
+
+        function createNewEvent() {
+            let title = document.getElementById('new-ev-title').value;
+            let fee = document.getElementById('new-ev-fee').value;
+            let type = document.getElementById('new-ev-type').value;
+
+            if(!title || !fee) { alert("সব ফিল্ড পূরণ করুন!"); return; }
+
+            let newEv = { id: Date.now(), title, type, fee: Number(fee), bookings: [] };
+            if(type === 'tour') newEv.seats = generateSeats();
+
+            eventsData.push(newEv);
+            saveData();
+            alert("নতুন ইভেন্ট সফলভাবে তৈরি করা হয়েছে!");
+            document.getElementById('new-ev-title').value = '';
+            document.getElementById('new-ev-fee').value = '';
+            renderAdminEventsPage();
+        }
+
+        function deleteEvent(id) {
+            if(confirm("সতর্কতা: এই ইভেন্টটি ডিলিট করলে এর সকল বুকিং ও হিস্ট্রি মুছে যাবে। নিশ্চিত?")) {
+                eventsData = eventsData.filter(e => e.id !== id);
+                saveData();
+                renderAdminEventsPage();
+            }
+        }
+
+        function renderAdminEventsPage() {
+            const container = document.getElementById('admin-events-manage-list');
+            if(eventsData.length === 0) {
+                container.innerHTML = `<p style="font-size:12px; color:#64748b;">কোনো ইভেন্ট নেই।</p>`;
+                return;
+            }
+            container.innerHTML = eventsData.map(ev => `
+                <div class="event-card" style="border-left:4px solid #ef4444;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h4 style="font-size:14px;">${ev.title}</h4>
+                        <button class="btn btn-danger" style="width:auto; padding:4px 10px; font-size:11px; margin-top:0;" onclick="deleteEvent(${ev.id})">ডিলিট</button>
+                    </div>
+                    <p style="font-size:12px; color:#64748b;">ক্যাটাগরি: ${ev.type.toUpperCase()} | ফি: ${ev.fee}৳</p>
+                </div>
+            `).join('');
+        }
+
+        function approveAddMoney(reqId) {
+            let req = addMoneyRequests.find(r => r.id === reqId);
+            if(req && req.status !== 'Approved') {
+                req.status = 'Approved';
+                userWallet += Number(req.amount);
+                saveData();
+                renderAdminAddMoneyPage();
+            }
+        }
+
+        function deleteAddMoney(reqId) {
+            addMoneyRequests = addMoneyRequests.filter(r => r.id !== reqId);
+            saveData();
+            renderAdminAddMoneyPage();
+        }
+
+        function renderAdminAddMoneyPage() {
+            const addmContainer = document.getElementById('admin-addmoney-list');
+            if(addMoneyRequests.length === 0) {
+                addmContainer.innerHTML = `<p style="font-size:12px; color:#64748b;">কোনো Add মানি রিকোয়েস্ট নেই।</p>`;
+                return;
+            }
+            addmContainer.innerHTML = addMoneyRequests.map(r => {
+                let stColor = r.status === 'Approved' ? '#10b981' : '#f59e0b';
+                return `
+                    <div class="event-card" style="padding:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                            <div>
+                                <b>${r.name}</b> (${r.phone}) — <b>${r.amount}৳</b><br>
+                                মাধ্যম: ${r.paymentMethod} | ডিজিট: ${r.digits} | <b style="color:${stColor};">${r.status}</b>
+                            </div>
+                            <div style="display:flex; gap:5px;">
+                                ${r.status !== 'Approved' ? `<button class="btn btn-success" style="padding:5px 10px; font-size:11px; margin-top:0;" onclick="approveAddMoney(${r.id})">Approve</button>` : ''}
+                                <button class="btn btn-danger" style="padding:5px 10px; font-size:11px; margin-top:0;" onclick="deleteAddMoney(${r.id})">ডিলিট</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAdminUsersPage() {
+            const usersContainer = document.getElementById('admin-users-list');
+            if(registeredUsers.length === 0) {
+                usersContainer.innerHTML = `<p style="font-size:12px; color:#64748b;">এখনো কোনো ইউজার লগইন করেনি।</p>`;
+                return;
+            }
+            usersContainer.innerHTML = registeredUsers.map(u => `
+                <div class="event-card" style="padding:12px; font-size:12px;">
+                    <b>${u.name}</b> — 📞 ${u.phone}<br>
+                    <span style="color:#64748b; font-size:11px;">সর্বশেষ লগইন: ${u.lastLogin}</span>
+                </div>
+            `).join('');
+        }
+
+        function approveBooking(eventId, bookingId) {
+            let ev = eventsData.find(e => e.id === eventId);
+            let b = ev.bookings.find(bk => bk.id === bookingId);
+            if(b) {
+                b.status = 'Approved';
+                if(ev.type === 'tour' && b.extraInfo) {
+                    let seatCode = b.extraInfo.replace('সিট: ', '').trim();
+                    if(ev.seats[seatCode]) {
+                        ev.seats[seatCode].status = 'booked';
+                        ev.seats[seatCode].user = b.name;
+                    }
+                }
+                saveData();
+                renderAdminHistoryPage();
+            }
+        }
+
+        function deleteBooking(eventId, bookingId) {
+            let ev = eventsData.find(e => e.id === eventId);
+            ev.bookings = ev.bookings.filter(bk => bk.id !== bookingId);
+            saveData();
+            renderAdminHistoryPage();
+        }
+
+        function approveDonation(donId) {
+            let d = donationsData.find(dn => dn.id === donId);
+            if(d) {
+                d.status = 'Approved';
+                saveData();
+                renderAdminHistoryPage();
+            }
+        }
+
+        function deleteDonation(donId) {
+            donationsData = donationsData.filter(dn => dn.id !== donId);
+            saveData();
+            renderAdminHistoryPage();
+        }
+
+        function renderAdminHistoryPage() {
+            let container = document.getElementById('admin-bookings-list');
+            container.innerHTML = `<h4 style="font-size:14px; margin-bottom:8px;">ইভেন্ট বুকিংসমূহ</h4>`;
+
+            eventsData.forEach(ev => {
+                let bookingsHtml = ev.bookings.length === 0 ? '<p style="font-size:12px; color:#64748b;">কোনো বুকিং নেই</p>' : '';
+                ev.bookings.forEach(b => {
+                    let statusColor = b.status === 'Approved' ? '#10b981' : '#f59e0b';
+                    bookingsHtml += `
+                        <div style="font-size:12px; border-bottom:1px dashed #cbd5e1; padding:6px 0; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                👤 <b>${b.name}</b> (${b.phone})<br>
+                                📍 ${b.address || 'N/A'} | 💰 ${b.amount}৳ (${b.paymentMethod}, ডিজিট: ${b.digits}) ${b.extraInfo ? '| ' + b.extraInfo : ''}<br>
+                                স্ট্যাটাস: <b style="color:${statusColor};">${b.status}</b>
+                            </div>
+                            <div style="display:flex; gap:4px;">
+                                ${b.status === 'Pending' ? `<button class="btn btn-success" style="padding:4px 8px; font-size:10px; margin-top:0;" onclick="approveBooking(${ev.id}, ${b.id})">Approve</button>` : ''}
+                                <button class="btn btn-danger" style="padding:4px 8px; font-size:10px; margin-top:0;" onclick="deleteBooking(${ev.id}, ${b.id})">ডিলিট</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="event-card">
+                        <h4 style="font-size:14px;">${ev.title}</h4>
+                        <div style="background:#f8fafc; padding:8px; border-radius:8px; margin-top:4px;">${bookingsHtml}</div>
+                    </div>
+                `;
+            });
+
+            let donContainer = document.getElementById('admin-donations-list');
+            let donHtml = `<h4 style="font-size:14px; margin-bottom:8px;">💖 ডোনেশন হিস্ট্রি</h4>`;
+            if(donationsData.length === 0) {
+                donHtml += `<p style="font-size:12px; color:#64748b;">কোনো ডোনেশন নেই।</p>`;
+            } else {
+                donationsData.forEach(d => {
+                    let dStatusColor = d.status === 'Approved' ? '#10b981' : '#f59e0b';
+                    donHtml += `
+                        <div class="event-card" style="padding:10px; font-size:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <b>${d.name}</b> (${d.phone}) - <b>${d.amount}৳</b> via ${d.paymentMethod} (ডিজিট: ${d.digits})<br>
+                                    স্ট্যাটাস: <b style="color:${dStatusColor};">${d.status}</b> [${d.date}]
+                                </div>
+                                <div style="display:flex; gap:4px;">
+                                    ${d.status === 'Pending' ? `<button class="btn btn-success" style="padding:4px 8px; font-size:10px; margin-top:0;" onclick="approveDonation(${d.id})">Approve</button>` : ''}
+                                    <button class="btn btn-danger" style="padding:4px 8px; font-size:10px; margin-top:0;" onclick="deleteDonation(${d.id})">ডিলিট</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            donContainer.innerHTML = donHtml;
+        }
+
+        function renderAdminPollPage() {
+            const box = document.getElementById('admin-poll-result-box');
+            if(!pollData.active) {
+                box.innerHTML = `<p style="font-size:12px; color:#64748b;">বর্তমানে কোনো ভোট চালু নেই।</p>`;
+                return;
+            }
+            const total = pollData.opt1.votes + pollData.opt2.votes;
+            const winner = pollData.opt1.votes >= pollData.opt2.votes ? pollData.opt1 : pollData.opt2;
+            box.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+                    <h4 style="font-size:14px; color:#0f172a;">📊 লাইভ ফলাফল: ${pollData.title}</h4>
+                    <button class="btn btn-danger" style="width:auto; padding:5px 10px; font-size:11px; margin-top:0;" onclick="deleteCurrentPoll()">ভোট ডিলিট</button>
+                </div>
+                <p style="font-size:12px;">${pollData.opt1.name}: <b>${pollData.opt1.votes}</b> ভোট</p>
+                <p style="font-size:12px;">${pollData.opt2.name}: <b>${pollData.opt2.votes}</b> ভোট</p>
+                <p style="font-size:12px; margin-top:6px;">মোট ভোট: <b>${total}</b> | সম্ভাব্য/বর্তমান বিজয়ী: <b style="color:#10b981;">${winner.name}</b></p>
+                <p style="font-size:11px; color:#64748b; margin-top:4px;">শেষ সময়: ${new Date(pollData.deadline).toLocaleString('bn-BD')}</p>
+            `;
+        }
+
+        function manualSaveWinner() {
+            const evTitle = document.getElementById('win-event-title').value.trim();
+            const winName = document.getElementById('win-name-input').value.trim();
+            const note = document.getElementById('win-note-input').value.trim();
+            if(!evTitle || !winName) {
+                alert("ইভেন্টের নাম ও বিজয়ীর নাম লিখুন!");
+                return;
+            }
+            winnersHistory.unshift({
+                id: Date.now(),
+                eventTitle: evTitle,
+                winnerName: winName,
+                note: note,
+                date: new Date().toLocaleDateString('bn-BD')
+            });
+            saveData();
+            document.getElementById('win-event-title').value = '';
+            document.getElementById('win-name-input').value = '';
+            document.getElementById('win-note-input').value = '';
+            alert("বিজয়ীর তথ্য সেভ হয়েছে!");
+            renderAdminWinnersPage();
+        }
+
+        function renderAdminWinnersPage() {
+            const container = document.getElementById('admin-winners-list');
+            if(winnersHistory.length === 0) {
+                container.innerHTML = `<p style="font-size:12px; color:#64748b;">কোনো বিজয়ীর তথ্য নেই।</p>`;
+                return;
+            }
+            container.innerHTML = winnersHistory.map(w => `
+                <div class="event-card" style="padding:12px; font-size:12px;">
+                    <b>🏆 ${w.winnerName}</b> — ${w.eventTitle}<br>
+                    <span style="color:#64748b;">${w.note || ''} (${w.date})</span>
+                </div>
+            `).join('');
+        }
+
+        function openAdminListPopup() { document.getElementById('admin-list-popup-overlay').style.display = 'flex'; }
+    </script>
+</body>
+</html>
+
