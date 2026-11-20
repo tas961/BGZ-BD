@@ -35,7 +35,7 @@
             display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        /* Shutdown Overlay Screen */
+        /* Shutdown Lock Screen */
         #site-shutdown-screen {
             position: fixed; inset: 0; z-index: 100000;
             background: radial-gradient(circle at top, #1e1b4b 0%, #090d16 100%);
@@ -44,10 +44,69 @@
         }
         .shutdown-card {
             width: 100%; max-width: 400px;
-            background: rgba(30, 41, 59, 0.92);
+            background: rgba(30, 41, 59, 0.94);
             border: 1px solid rgba(251, 191, 36, 0.35);
             border-radius: 24px; padding: 26px 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.55);
+        }
+        .secret-trigger-dot {
+            margin-top: 18px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.22);
+            cursor: pointer;
+            user-select: none;
+            display: inline-block;
+            padding: 4px 10px;
+        }
+        #secret-admin-login-box {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed rgba(255,255,255,0.2);
+            text-align: left;
+        }
+        #secret-admin-login-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(15, 23, 42, 0.9);
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* Main Switch Bar inside Admin */
+        .main-switch-bar {
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .switch-toggle {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            display: inline-block;
+        }
+        .switch-toggle input { opacity: 0; width: 0; height: 0; }
+        .switch-slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background-color: #10b981; transition: .3s; border-radius: 999px;
+        }
+        .switch-slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px;
+            left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;
+        }
+        .switch-toggle input:checked + .switch-slider {
+            background-color: #ef4444;
+        }
+        .switch-toggle input:checked + .switch-slider:before {
+            transform: translateX(24px);
         }
 
         /* Headers */
@@ -365,16 +424,24 @@
 </head>
 <body>
 
-    <!-- Website Shutdown Funny Screen -->
+    <!-- Website Shutdown Lock Screen (No direct user bypass) -->
     <div id="site-shutdown-screen">
         <div class="shutdown-card">
-            <div style="font-size:48px; margin-bottom:10px;">🚌💤</div>
+            <div id="shutdown-bus-tap" onclick="handleSecretShutdownTap()" style="font-size:48px; margin-bottom:10px; cursor:pointer; user-select:none;">🚌💤</div>
             <span style="display:inline-block; background:#ef4444; color:#fff; font-size:11px; font-weight:800; padding:4px 10px; border-radius:999px; margin-bottom:10px;">WEBSITE SHUTDOWN</span>
             <h2 style="font-size:20px; color:#fbbf24; margin-bottom:10px; font-weight:800;">বাস এখন গ্যারেজে ঘুমাচ্ছে!</h2>
-            <p id="shutdown-funny-msg" style="font-size:14px; color:#e2e8f0; line-height:1.6; margin-bottom:18px;">
+            <p id="shutdown-funny-msg" style="font-size:14px; color:#e2e8f0; line-height:1.6;">
                 ড্রাইভার ভাই চা খেতে গেছেন আর কন্ডাক্টর ভাই হিসাব মেলাচ্ছেন! একটু পরে আবার ট্রাই করুন। 😄
             </p>
-            <button class="btn" style="background:rgba(255,255,255,0.14); box-shadow:none;" onclick="openAdminFromShutdown()">⚙️ অ্যাডমিন শাট-অন করুন</button>
+
+            <div class="secret-trigger-dot" onclick="handleSecretShutdownTap()">• • •</div>
+
+            <div id="secret-admin-login-box">
+                <p style="font-size:11px; color:#fbbf24; font-weight:700; margin-bottom:8px;">🔐 গোপন অ্যাডমিন লগইন</p>
+                <input type="text" id="secret-admin-user" value="BGZ" placeholder="ইউজারনেম">
+                <input type="password" id="secret-admin-pass" placeholder="অ্যাডমিন পাসওয়ার্ড">
+                <button class="btn btn-danger" style="margin-top:4px; padding:10px;" onclick="handleSecretShutdownAdminLogin()">লগইন করে শাটডাউন কন্ট্রোলে যান</button>
+            </div>
         </div>
     </div>
 
@@ -685,7 +752,7 @@
             </div>
 
             <!-- ==========================================
-                 9. ADMIN MAIN DASHBOARD (DEDICATED NAV)
+                 9. ADMIN MAIN DASHBOARD WITH MAIN SWITCH
             ========================================== -->
             <div id="admin-panel" class="screen">
                 <div class="admin-top-header">
@@ -699,6 +766,18 @@
                             <button class="icon-btn" onclick="showScreen('user-panel')" title="Logout">🚪</button>
                         </div>
                     </div>
+
+                    <div class="main-switch-bar">
+                        <div>
+                            <b style="font-size:12px; display:block;">🔌 ওয়েবসাইট মেইন সুইচ</b>
+                            <span id="main-switch-status-text" style="font-size:11px; color:#bbf7d0; font-weight:700;">ONLINE (চালু আছে)</span>
+                        </div>
+                        <label class="switch-toggle">
+                            <input type="checkbox" id="admin-main-switch-checkbox" onchange="toggleMainSiteSwitch(this.checked)">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
                     <div class="search-bar-box">
                         <span>⚙️</span>
                         <input type="text" readonly value="যেকোনো আইকনে ক্লিক করে আলাদা পেজ খুলুন">
@@ -900,34 +979,73 @@
         let uploadedPollImg1 = "";
         let uploadedPollImg2 = "";
         let lastVotedOpt = null;
-        let pendingShutdownAdminUnlock = false;
+        let adminAuthenticated = false;
+        let secretTapCount = 0;
 
         window.onload = function() {
             startLiveClock();
             document.getElementById('display-notice-text').innerText = appSettings.noticeText;
             renderUserEvents();
-            applyShutdownState();
+            syncMainSwitchUI();
+            enforceShutdownGuard();
             showScreen('user-bus-login-screen');
         };
 
-        function applyShutdownState() {
+        function syncMainSwitchUI() {
+            const cb = document.getElementById('admin-main-switch-checkbox');
+            const st = document.getElementById('main-switch-status-text');
+            if(cb) cb.checked = !!appSettings.siteShutdown;
+            if(st) {
+                st.innerText = appSettings.siteShutdown ? "SHUTDOWN (বন্ধ আছে)" : "ONLINE (চালু আছে)";
+                st.style.color = appSettings.siteShutdown ? "#fca5a5" : "#bbf7d0";
+            }
+        }
+
+        function enforceShutdownGuard() {
             const shutdownEl = document.getElementById('site-shutdown-screen');
             const msgEl = document.getElementById('shutdown-funny-msg');
             if(msgEl) {
                 msgEl.innerText = appSettings.shutdownFunnyMsg || "ড্রাইভার ভাই চা খেতে গেছেন আর কন্ডাক্টর ভাই হিসাব মেলাচ্ছেন! একটু পরে আবার ট্রাই করুন। 😄";
             }
-            if(appSettings.siteShutdown && !pendingShutdownAdminUnlock) {
+            if(appSettings.siteShutdown && !adminAuthenticated) {
                 shutdownEl.style.display = 'flex';
             } else {
                 shutdownEl.style.display = 'none';
             }
         }
 
-        function openAdminFromShutdown() {
-            pendingShutdownAdminUnlock = true;
-            document.getElementById('site-shutdown-screen').style.display = 'none';
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-            document.getElementById('admin-login-screen').classList.add('active-screen');
+        function toggleMainSiteSwitch(isShutdownNow) {
+            appSettings.siteShutdown = !!isShutdownNow;
+            saveData();
+            syncMainSwitchUI();
+            enforceShutdownGuard();
+            alert(appSettings.siteShutdown ? "ওয়েবসাইট শাটডাউন করা হয়েছে। ইউজাররা শাটডাউন মেসেজ দেখবে।" : "ওয়েবসাইট আবার শাট-অন (চালু) করা হয়েছে!");
+        }
+
+        function handleSecretShutdownTap() {
+            secretTapCount += 1;
+            if(secretTapCount >= 3) {
+                document.getElementById('secret-admin-login-box').style.display = 'block';
+                secretTapCount = 0;
+            }
+        }
+
+        function handleSecretShutdownAdminLogin() {
+            const u = document.getElementById('secret-admin-user').value.trim();
+            const p = document.getElementById('secret-admin-pass').value;
+            if(u === 'BGZ' && p === adminPass) {
+                adminAuthenticated = true;
+                appSettings.siteShutdown = false;
+                saveData();
+                syncMainSwitchUI();
+                enforceShutdownGuard();
+                document.getElementById('secret-admin-pass').value = '';
+                document.getElementById('secret-admin-login-box').style.display = 'none';
+                showScreen('admin-panel');
+                alert("অ্যাডমিন লগইন সফল ও ওয়েবসাইট শাট-অন হয়েছে!");
+            } else {
+                alert("ভুল ইউজারনেম বা অ্যাডমিন পাসওয়ার্ড!");
+            }
         }
 
         function updateUserDisplay() {
@@ -937,6 +1055,10 @@
 
         function handleUserBusLogin(e) {
             e.preventDefault();
+            if(appSettings.siteShutdown && !adminAuthenticated) {
+                enforceShutdownGuard();
+                return;
+            }
             const uName = document.getElementById('bus-user-name').value.trim();
             const uPhone = document.getElementById('bus-user-phone').value.trim();
             const uPass = document.getElementById('bus-user-pass').value;
@@ -1019,11 +1141,12 @@
         let currentFilter = 'all';
 
         function showScreen(screenId) {
-            if(appSettings.siteShutdown && screenId !== 'admin-panel' && !pendingShutdownAdminUnlock) {
-                applyShutdownState();
+            const isAdminRoute = screenId.startsWith('admin-');
+            if(appSettings.siteShutdown && !(adminAuthenticated && isAdminRoute)) {
+                enforceShutdownGuard();
                 return;
             }
-            if(screenId !== 'user-bus-login-screen' && (!visitorName || !visitorPhone)) {
+            if(!isAdminRoute && screenId !== 'user-bus-login-screen' && (!visitorName || !visitorPhone)) {
                 screenId = 'user-bus-login-screen';
             }
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
@@ -1031,6 +1154,9 @@
             if(screenId === 'user-panel') {
                 updateUserDisplay();
                 renderUserEvents();
+            }
+            if(screenId === 'admin-panel') {
+                syncMainSwitchUI();
             }
         }
 
@@ -1622,7 +1748,9 @@
             let u = document.getElementById('admin-user-input').value;
             let p = document.getElementById('admin-pass-input').value;
             if(u === 'BGZ' && p === adminPass) {
-                pendingShutdownAdminUnlock = false;
+                adminAuthenticated = true;
+                syncMainSwitchUI();
+                enforceShutdownGuard();
                 showScreen('admin-panel');
             } else {
                 alert("ভুল পাসওয়ার্ড! (ডিফল্ট: 1230)");
@@ -1632,7 +1760,9 @@
         function quickFingerprintLogin() {
             let pin = prompt("ফিঙ্গারপ্রিন্ট সিমুলেশন: অ্যাডমিন পিন বা পাসওয়ার্ড দিন (ডিফল্ট: 1230):");
             if(pin === adminPass) {
-                pendingShutdownAdminUnlock = false;
+                adminAuthenticated = true;
+                syncMainSwitchUI();
+                enforceShutdownGuard();
                 showScreen('admin-panel');
             } else if(pin !== null) {
                 alert("ভুল পিন!");
@@ -1677,8 +1807,9 @@
             }
 
             saveData();
+            syncMainSwitchUI();
             document.getElementById('display-notice-text').innerText = appSettings.noticeText;
-            applyShutdownState();
+            enforceShutdownGuard();
             alert(appSettings.siteShutdown ? "ওয়েবসাইট শাটডাউন করা হয়েছে!" : "ওয়েবসাইট সচল ও সেটিংস আপডেট করা হয়েছে!");
         }
 
