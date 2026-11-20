@@ -35,6 +35,21 @@
             display: flex; flex-direction: column; justify-content: space-between;
         }
 
+        /* Shutdown Overlay Screen */
+        #site-shutdown-screen {
+            position: fixed; inset: 0; z-index: 100000;
+            background: radial-gradient(circle at top, #1e1b4b 0%, #090d16 100%);
+            color: #f8fafc; display: none; flex-direction: column;
+            justify-content: center; align-items: center; padding: 24px; text-align: center;
+        }
+        .shutdown-card {
+            width: 100%; max-width: 400px;
+            background: rgba(30, 41, 59, 0.92);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            border-radius: 24px; padding: 26px 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
         /* Headers */
         .app-top-header { background: var(--primary-gradient); padding: 20px; border-radius: 22px; color: white; margin: -20px -20px 18px -20px; position: relative; }
         .admin-top-header { background: var(--admin-gradient); padding: 20px; border-radius: 22px; color: white; margin: -20px -20px 18px -20px; position: relative; }
@@ -75,16 +90,45 @@
         .service-item:hover .service-icon { transform: scale(1.06); background: #fce7f3; }
         .service-item span { font-size: 11px; font-weight: 700; color: var(--text-muted); }
 
-        .notice-banner { background: #f0fdf4; border: 1px solid #dcfce7; padding: 14px 16px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; box-shadow: var(--card-shadow); cursor: pointer; }
-        .notice-content h4 { font-size: 14px; font-weight: 700; color: #166534; }
-        .notice-content p { font-size: 12px; color: #15803d; margin-top: 2px; }
+        /* Ad-style Notice Card */
+        .ad-notice-card {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #fde68a;
+            border-radius: 16px;
+            padding: 13px 15px;
+            margin-bottom: 16px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+        .ad-badge {
+            display: inline-block;
+            background: #0f172a;
+            color: #fbbf24;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 5px;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+        .ad-notice-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #78350f;
+            margin-bottom: 3px;
+        }
+        .ad-notice-body {
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.45;
+        }
 
         .screen { display: none; }
         .active-screen { display: block; animation: fadeIn 0.25s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .auth-title { text-align: center; margin: 10px 0 20px 0; font-size: 22px; color: #db2777; font-weight: 800; }
 
-        .form-group { margin-bottom: 14px; }
+        .form-group { margin-bottom: 13px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-size: 14px; font-weight: 500; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #db2777; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(219, 39, 119, 0.12); }
@@ -157,12 +201,12 @@
         .bus-stage {
             position: relative;
             width: 100%;
-            height: 155px;
+            height: 145px;
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 72%, #1e293b 72%, #020617 100%);
             border-radius: 18px;
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.14);
-            margin-top: 12px;
+            margin-top: 10px;
             box-shadow: inset 0 0 25px rgba(0,0,0,0.55);
         }
         .road-stripes {
@@ -186,7 +230,7 @@
         }
         .speed-lines {
             position: absolute;
-            top: 26px;
+            top: 24px;
             left: 0;
             width: 200%;
             height: 2px;
@@ -288,8 +332,8 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 20px;
-            padding: 20px;
-            margin-top: 16px;
+            padding: 18px;
+            margin-top: 14px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
         }
         .bus-login-card input {
@@ -320,6 +364,19 @@
     </style>
 </head>
 <body>
+
+    <!-- Website Shutdown Funny Screen -->
+    <div id="site-shutdown-screen">
+        <div class="shutdown-card">
+            <div style="font-size:48px; margin-bottom:10px;">🚌💤</div>
+            <span style="display:inline-block; background:#ef4444; color:#fff; font-size:11px; font-weight:800; padding:4px 10px; border-radius:999px; margin-bottom:10px;">WEBSITE SHUTDOWN</span>
+            <h2 style="font-size:20px; color:#fbbf24; margin-bottom:10px; font-weight:800;">বাস এখন গ্যারেজে ঘুমাচ্ছে!</h2>
+            <p id="shutdown-funny-msg" style="font-size:14px; color:#e2e8f0; line-height:1.6; margin-bottom:18px;">
+                ড্রাইভার ভাই চা খেতে গেছেন আর কন্ডাক্টর ভাই হিসাব মেলাচ্ছেন! একটু পরে আবার ট্রাই করুন। 😄
+            </p>
+            <button class="btn" style="background:rgba(255,255,255,0.14); box-shadow:none;" onclick="openAdminFromShutdown()">⚙️ অ্যাডমিন শাট-অন করুন</button>
+        </div>
+    </div>
 
     <!-- Admin List Modal -->
     <div id="admin-list-popup-overlay" class="modal-overlay">
@@ -374,7 +431,7 @@
             <div id="user-bus-login-screen" class="screen active-screen">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:12px; color:#fbbf24; font-weight:800;">🚌 BUSES OF GABTOLI ZONE</span>
-                    <span style="font-size:11px; color:#cbd5e1; font-weight:600;">লগইন আবশ্যক</span>
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:600;">পাসওয়ার্ড সুরক্ষিত</span>
                 </div>
 
                 <div class="bus-stage">
@@ -397,8 +454,8 @@
                 </div>
 
                 <div class="bus-login-card">
-                    <h3 style="text-align:center; color:#f472b6; font-size:19px; margin-bottom:4px; font-weight:800;">যাত্রী লগইন</h3>
-                    <p style="text-align:center; color:#cbd5e1; font-size:12px; margin-bottom:14px;">লগইন না করলে ভেতরে প্রবেশ করা যাবে না</p>
+                    <h3 style="text-align:center; color:#f472b6; font-size:18px; margin-bottom:4px; font-weight:800;">যাত্রী লগইন / রেজিস্টার</h3>
+                    <p style="text-align:center; color:#cbd5e1; font-size:11px; margin-bottom:12px;">নতুন নাম্বার হলে পাসওয়ার্ড সেট হবে, পুরনো নাম্বারে পাসওয়ার্ড লাগবে</p>
 
                     <form onsubmit="handleUserBusLogin(event)">
                         <div class="form-group">
@@ -408,6 +465,10 @@
                         <div class="form-group">
                             <label style="color:#e2e8f0;">মোবাইল নাম্বার</label>
                             <input type="tel" id="bus-user-phone" placeholder="017XXXXXXXX" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:#e2e8f0;">আপনার পাসওয়ার্ড / পিন</label>
+                            <input type="password" id="bus-user-pass" placeholder="কমপক্ষে ৪ ডিজিট/অক্ষর" required>
                         </div>
                         <button type="submit" class="btn">লগইন করে যাত্রা শুরু করুন</button>
                     </form>
@@ -437,6 +498,7 @@
                             <button class="icon-btn" onclick="openAddMoneyScreen()" title="Add Money">➕</button>
                             <button class="icon-btn" onclick="openAdminListPopup()" title="Admin List">👥</button>
                             <button class="icon-btn" onclick="showScreen('admin-login-screen')" title="Admin Panel">⚙️</button>
+                            <button class="icon-btn" onclick="logoutUserAccount()" title="Logout">🚪</button>
                         </div>
                     </div>
 
@@ -488,13 +550,11 @@
                     </div>
                 </div>
 
-                <!-- Notice Banner -->
-                <div class="notice-banner" onclick="alert(appSettings.noticeText)">
-                    <div class="notice-content">
-                        <h4>🔔 জরুরি নোটিশ</h4>
-                        <p id="display-notice-text">লোডিং...</p>
-                    </div>
-                    <span style="font-size: 18px; color: #166534;">›</span>
+                <!-- Ad-style Notice Card -->
+                <div class="ad-notice-card">
+                    <span class="ad-badge">AD • স্পন্সরড নোটিশ</span>
+                    <div class="ad-notice-title">🚌 Buses of Gabtoli Zone আপডেট</div>
+                    <p class="ad-notice-body" id="display-notice-text">লোডিং...</p>
                 </div>
 
                 <h3 id="event-section-title" style="font-size:16px; font-weight:700; margin:12px 0 10px 0; color:#0f172a;">সকল ইভেন্টসমূহ</h3>
@@ -659,8 +719,8 @@
                         <span>ইউজার লিস্ট</span>
                     </div>
                     <div class="service-item" onclick="openAdminSubPage('admin-page-settings')">
-                        <div class="service-icon">💸</div>
-                        <span>গেটওয়ে সেট</span>
+                        <div class="service-icon">🔌</div>
+                        <span>শাটডাউন ও সেট</span>
                     </div>
                 </div>
 
@@ -718,11 +778,22 @@
                 <div id="admin-users-list"></div>
             </div>
 
-            <!-- Admin Sub-Page 4: Payment Gateway & Settings -->
+            <!-- Admin Sub-Page 4: Shutdown, Payment Gateway & Settings -->
             <div id="admin-page-settings" class="screen">
                 <span class="back-link" onclick="showScreen('admin-panel')">← অ্যাডমিন ড্যাশবোর্ডে ফিরুন</span>
+                <div class="event-card" style="border-left:4px solid #ef4444;">
+                    <h4 style="font-size:15px; color:#dc2626; margin-bottom:6px;">🔌 ওয়েবসাইট শাটডাউন / শাট-অন কন্ট্রোল</h4>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="admin-site-shutdown"> ওয়েবসাইট শাটডাউন (Shutdown) চালু রাখুন</label>
+                    </div>
+                    <div class="form-group">
+                        <label>শাটডাউন ফানি মেসেজ</label>
+                        <textarea id="admin-shutdown-msg" rows="2" placeholder="ফানি মেসেজ লিখুন..."></textarea>
+                    </div>
+                </div>
+
                 <div class="event-card">
-                    <h4 style="font-size:15px; color:#0f172a; margin-bottom:8px;">⚙️ পেমেন্ট গেটওয়ে ও নোটিশ কন্ট্রোল</h4>
+                    <h4 style="font-size:15px; color:#0f172a; margin-bottom:8px;">⚙️ পেমেন্ট গেটওয়ে ও অ্যাড-নোটিশ কন্ট্রোল</h4>
                     <div class="form-group"><label>বিকাশ নাম্বার</label><input type="text" id="admin-bkash-num"></div>
                     <div class="form-group">
                         <label><input type="checkbox" id="admin-bkash-active"> বিকাশ অপশন চালু রাখুন</label>
@@ -731,7 +802,7 @@
                     <div class="form-group">
                         <label><input type="checkbox" id="admin-nagad-active"> নগদ অপশন চালু রাখুন</label>
                     </div>
-                    <div class="form-group"><label>হোম নোটিশ টেক্সট</label><input type="text" id="admin-notice-input"></div>
+                    <div class="form-group"><label>অ্যাড-নোটিশ টেক্সট</label><input type="text" id="admin-notice-input"></div>
                     <div class="form-group"><label>নতুন অ্যাডমিন পাসওয়ার্ড</label><input type="password" id="new-admin-pass" placeholder="খালি রাখলে পরিবর্তন হবে না"></div>
                     <button class="btn btn-danger" onclick="saveAdminSettings()">সেটিংস আপডেট করুন</button>
                 </div>
@@ -790,8 +861,9 @@
 
     <script>
         let adminPass = localStorage.getItem('bgz_admin_pass') || '1230';
-        let visitorName = localStorage.getItem('bgz_visitor_name') || '';
-        let visitorPhone = localStorage.getItem('bgz_visitor_phone') || '';
+        let userAccounts = JSON.parse(localStorage.getItem('bgz_user_accounts')) || {};
+        let visitorName = '';
+        let visitorPhone = '';
         let userWallet = Number(localStorage.getItem('bgz_user_wallet')) || 0;
         let registeredUsers = JSON.parse(localStorage.getItem('bgz_registered_users')) || [];
         let addMoneyRequests = JSON.parse(localStorage.getItem('bgz_addmoney_requests')) || [];
@@ -802,7 +874,9 @@
             bkashActive: true,
             nagadNumber: "01800-000000",
             nagadActive: true,
-            noticeText: "ঈদুল ফিতর স্পেশাল বাস টিকেট এবং টিশার্ট বুকিং চলছে!"
+            noticeText: "ঈদুল ফিতর স্পেশাল বাস টিকেট এবং টিশার্ট বুকিং চলছে!",
+            siteShutdown: false,
+            shutdownFunnyMsg: "ড্রাইভার ভাই চা খেতে গেছেন আর কন্ডাক্টর ভাই হিসাব মেলাচ্ছেন! একটু পরে আবার ট্রাই করুন। 😄"
         };
 
         let eventsData = JSON.parse(localStorage.getItem('bgz_events_data')) || [
@@ -826,15 +900,35 @@
         let uploadedPollImg1 = "";
         let uploadedPollImg2 = "";
         let lastVotedOpt = null;
+        let pendingShutdownAdminUnlock = false;
 
         window.onload = function() {
             startLiveClock();
             document.getElementById('display-notice-text').innerText = appSettings.noticeText;
             renderUserEvents();
-
-            // Always show mandatory Bus Login screen on app entry
+            applyShutdownState();
             showScreen('user-bus-login-screen');
         };
+
+        function applyShutdownState() {
+            const shutdownEl = document.getElementById('site-shutdown-screen');
+            const msgEl = document.getElementById('shutdown-funny-msg');
+            if(msgEl) {
+                msgEl.innerText = appSettings.shutdownFunnyMsg || "ড্রাইভার ভাই চা খেতে গেছেন আর কন্ডাক্টর ভাই হিসাব মেলাচ্ছেন! একটু পরে আবার ট্রাই করুন। 😄";
+            }
+            if(appSettings.siteShutdown && !pendingShutdownAdminUnlock) {
+                shutdownEl.style.display = 'flex';
+            } else {
+                shutdownEl.style.display = 'none';
+            }
+        }
+
+        function openAdminFromShutdown() {
+            pendingShutdownAdminUnlock = true;
+            document.getElementById('site-shutdown-screen').style.display = 'none';
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById('admin-login-screen').classList.add('active-screen');
+        }
 
         function updateUserDisplay() {
             document.getElementById('display-visitor-name').innerText = visitorName || 'User';
@@ -845,12 +939,22 @@
             e.preventDefault();
             const uName = document.getElementById('bus-user-name').value.trim();
             const uPhone = document.getElementById('bus-user-phone').value.trim();
-            if(!uName || !uPhone) return;
+            const uPass = document.getElementById('bus-user-pass').value;
+
+            if(!uName || !uPhone || !uPass) return;
+
+            if(userAccounts[uPhone]) {
+                if(userAccounts[uPhone].password !== uPass) {
+                    alert("এই মোবাইল নাম্বারের পাসওয়ার্ড ভুল! সঠিক পাসওয়ার্ড দিন।");
+                    return;
+                }
+                userAccounts[uPhone].name = uName;
+            } else {
+                userAccounts[uPhone] = { name: uName, password: uPass };
+            }
 
             visitorName = uName;
             visitorPhone = uPhone;
-            localStorage.setItem('bgz_visitor_name', visitorName);
-            localStorage.setItem('bgz_visitor_phone', visitorPhone);
 
             const existingIdx = registeredUsers.findIndex(u => u.phone === uPhone);
             if(existingIdx > -1) {
@@ -859,10 +963,18 @@
             } else {
                 registeredUsers.push({ name: uName, phone: uPhone, lastLogin: new Date().toLocaleString() });
             }
-            localStorage.setItem('bgz_registered_users', JSON.stringify(registeredUsers));
 
+            saveData();
+            document.getElementById('bus-user-pass').value = '';
             updateUserDisplay();
             showScreen('user-panel');
+        }
+
+        function logoutUserAccount() {
+            visitorName = '';
+            visitorPhone = '';
+            document.getElementById('bus-user-pass').value = '';
+            showScreen('user-bus-login-screen');
         }
 
         function startLiveClock() {
@@ -880,6 +992,8 @@
         }
 
         function saveData() {
+            localStorage.setItem('bgz_user_accounts', JSON.stringify(userAccounts));
+            localStorage.setItem('bgz_registered_users', JSON.stringify(registeredUsers));
             localStorage.setItem('bgz_events_data', JSON.stringify(eventsData));
             localStorage.setItem('bgz_donations_data', JSON.stringify(donationsData));
             localStorage.setItem('bgz_app_settings', JSON.stringify(appSettings));
@@ -905,6 +1019,10 @@
         let currentFilter = 'all';
 
         function showScreen(screenId) {
+            if(appSettings.siteShutdown && screenId !== 'admin-panel' && !pendingShutdownAdminUnlock) {
+                applyShutdownState();
+                return;
+            }
             if(screenId !== 'user-bus-login-screen' && (!visitorName || !visitorPhone)) {
                 screenId = 'user-bus-login-screen';
             }
@@ -1504,6 +1622,7 @@
             let u = document.getElementById('admin-user-input').value;
             let p = document.getElementById('admin-pass-input').value;
             if(u === 'BGZ' && p === adminPass) {
+                pendingShutdownAdminUnlock = false;
                 showScreen('admin-panel');
             } else {
                 alert("ভুল পাসওয়ার্ড! (ডিফল্ট: 1230)");
@@ -1513,6 +1632,7 @@
         function quickFingerprintLogin() {
             let pin = prompt("ফিঙ্গারপ্রিন্ট সিমুলেশন: অ্যাডমিন পিন বা পাসওয়ার্ড দিন (ডিফল্ট: 1230):");
             if(pin === adminPass) {
+                pendingShutdownAdminUnlock = false;
                 showScreen('admin-panel');
             } else if(pin !== null) {
                 alert("ভুল পিন!");
@@ -1531,6 +1651,8 @@
         }
 
         function renderAdminSettingsPage() {
+            document.getElementById('admin-site-shutdown').checked = !!appSettings.siteShutdown;
+            document.getElementById('admin-shutdown-msg').value = appSettings.shutdownFunnyMsg || '';
             document.getElementById('admin-bkash-num').value = appSettings.bkashNumber;
             document.getElementById('admin-bkash-active').checked = appSettings.bkashActive;
             document.getElementById('admin-nagad-num').value = appSettings.nagadNumber;
@@ -1540,6 +1662,8 @@
         }
 
         function saveAdminSettings() {
+            appSettings.siteShutdown = document.getElementById('admin-site-shutdown').checked;
+            appSettings.shutdownFunnyMsg = document.getElementById('admin-shutdown-msg').value.trim() || "ড্রাইভার ভাই চা খেতে গেছেন আর কন্ডাক্টর ভাই হিসাব মেলাচ্ছেন! একটু পরে আবার ট্রাই করুন। 😄";
             appSettings.bkashNumber = document.getElementById('admin-bkash-num').value;
             appSettings.bkashActive = document.getElementById('admin-bkash-active').checked;
             appSettings.nagadNumber = document.getElementById('admin-nagad-num').value;
@@ -1554,7 +1678,8 @@
 
             saveData();
             document.getElementById('display-notice-text').innerText = appSettings.noticeText;
-            alert("অ্যাডমিন সেটিংস সফলভাবে আপডেট করা হয়েছে!");
+            applyShutdownState();
+            alert(appSettings.siteShutdown ? "ওয়েবসাইট শাটডাউন করা হয়েছে!" : "ওয়েবসাইট সচল ও সেটিংস আপডেট করা হয়েছে!");
         }
 
         function createNewEvent() {
@@ -1812,4 +1937,3 @@
     </script>
 </body>
 </html>
-
